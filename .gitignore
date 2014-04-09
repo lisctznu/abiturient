@@ -1,1 +1,5 @@
+assets/
+/protected/runtime/
+/framework/cli/views/
+/images/Photos/
 /nbproject/private/

@@ -132,6 +132,10 @@ return array(
 		
 		'db'=>array(
 			'connectionString' => 'mysql:host=localhost;dbname=abiturient',
+                        // включаем профайлер
+                        'enableProfiling'=>true,
+                        // показываем значения параметров
+                        'enableParamLogging' => true,
 			'emulatePrepare' => true,
 			 'username' => 'edbo',
 			'password' => 'eU7InIl',    
@@ -171,10 +175,9 @@ return array(
             'class' => 'CLogRouter',
             'routes' => array(
                 array(
-                    'class' => 'ext.phpconsole.PhpConsoleYiiExtension',
-                    'handleErrors' => false,
-                    'handleExceptions' => false,
-                    'basePathToStrip' => dirname($_SERVER['DOCUMENT_ROOT']."/abiturient/")
+                            'class'=>'CProfileLogRoute',
+                            'levels'=>'profile',
+                            'enabled'=>true,
                 ),
                 
             // uncomment the following to show log messages on web pages

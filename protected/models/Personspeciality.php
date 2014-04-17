@@ -41,6 +41,7 @@
  *
  * The followings are the available model relations:
  * @property Person $person
+ * @property Documentsubject $documentSubject1
  * @property Documentsubject $documentSubject2
  * @property Documentsubject $documentSubject3
  * @property Subjects $exam1
@@ -54,7 +55,6 @@
  * @property Personenterancetypes $entranceType
  * @property Courses $course
  * @property Causality $causality
- * @property Documentsubject $documentSubject1
  * @property integer $StatusID
  * @property Personrequeststatustypes $status
  * @property integer $RequestFromEB
@@ -73,14 +73,18 @@ class Personspeciality extends ActiveRecord {
   /* @var $searchSpeciality Specialities */
   /* @var $searchFaculty Facultets */
   /* @var $searchDoc Documents */
+  /* @var $searchBenefit Benefits */
   public $searchPerson;
   public $searchSpeciality;
   public $searchFaculty;
   public $searchDoc;
+  public $searchBenefit;
   
   public $NAME;
   public $SPEC;
   public $Baldetail;
+  public $order_mode;
+  public $page_size;
 
   /**
    * Returns the static model of the specified AR class.
@@ -344,6 +348,9 @@ class Personspeciality extends ActiveRecord {
         'RequestFromEB' => 'Эл-на за-ка',
         "edboID" => "ЄДБО Код",
         "StatusID" => "Статус заявки",
+        "order_mode" => "Сортування у режимі 'РЕЙТИНГ' (за балами)",
+        "page_size" => "Кількість рядків для однієї сторінки у списку",
+        "SPEC" => "Ключові слова через пробіл для вибірки за спеціальністю",
     );
   }
 
@@ -387,9 +394,17 @@ class Personspeciality extends ActiveRecord {
   
   /**
    * Пошук із врахування зовнішніх реляційних відношень.
+   * Enjoy this code with smiles.
    */
   public function search_rel(){
-    
+    $order_mode = 0;
+    $page_size = 5;
+    if (is_numeric($this->order_mode)){
+      $order_mode = $this->order_mode;
+    }
+    if (is_numeric($this->page_size) && $this->page_size > 0){
+      $page_size = $this->page_size;
+    }
     $criteria = new CDbCriteria();
     //З якими відношеннями маємо справу
     $with_rel = array();
@@ -402,12 +417,15 @@ class Personspeciality extends ActiveRecord {
     array_push($with_rel, 'educationForm');
     $with_rel['sepciality.facultet'] = array('select' => false);
     $with_rel['person.docs'] = array('select' => false);
+    //array_push($with_rel, 'person.benefits.benefit');
+    $with_rel['person.benefits.benefit'] = array('select' => false);
     $criteria->with = $with_rel;
     
-    
-
-
+    //також йде вибірка ПІБ персон і спеціальності 
+    //формат поля спеціальності: [код_спеціальності назва_спеціальності[ (назва_напряму)] , форма: назва_форми]
+    //можна ще додати поле для деталізації балів (рейтингу), але це для зневадження 
     $criteria->select = array('*',
+        new CDbExpression('COUNT(DISTINCT benefit.idBenefit) AS cntBenefit'),
         new CDbExpression("concat_ws(' ',person.LastName,person.FirstName,person.MiddleName) AS NAME"),
         new CDbExpression("concat_ws(' ',"
                 . "sepciality.SpecialityClasifierCode,"
@@ -460,11 +478,23 @@ class Personspeciality extends ActiveRecord {
 //  if (isnull(t.Exam2Ball),0.0,t.Exam2Ball),"+", 
 //  if (isnull(t.Exam3Ball),0.0,t.Exam3Ball)) as Baldetail')
         );
+    $criteria->group = "t.idPersonSpeciality";
+    //оформлення єдиного запиту на вибірку
     $criteria->together = true;
+    
     $criteria->compare('facultet.FacultetFullName', $this->searchFaculty->FacultetFullName,true);
     $criteria->compare('t.idPersonSpeciality', $this->idPersonSpeciality);
     $criteria->compare('person.idPerson', $this->searchPerson->idPerson);
     $criteria->compare('docs.idDocuments', $this->searchDoc->idDocuments);
+    if (is_numeric($this->searchBenefit->BenefitName)){
+      $criteria->having = 'cntBenefit='.$this->searchBenefit->BenefitName;
+      if ($this->searchBenefit->BenefitName > 1){
+        $page_size = 1000;
+      }
+    }
+    if (!is_numeric($this->searchBenefit->BenefitName)){
+      $criteria->compare('benefit.BenefitName', $this->searchBenefit->BenefitName,true);
+    }
     if ($this->NAME){
       $criteria->addCondition('concat_ws(" ",person.LastName,person.FirstName,person.MiddleName) '
             . 'LIKE "%'.$this->NAME.'%"');
@@ -482,9 +512,7 @@ class Personspeciality extends ActiveRecord {
       }
     }
     
-
-    $criteria->group = "t.idPersonSpeciality";
-    $criteria->order = '(if (isnull(documentSubject1.SubjectValue),0.0,documentSubject1.SubjectValue) + 
+    $rating_order = 'if(sum(benefit.isPZK)>0,1,0) DESC, (if (isnull(documentSubject1.SubjectValue),0.0,documentSubject1.SubjectValue) + 
   if (isnull(documentSubject2.SubjectValue),0.0,documentSubject2.SubjectValue) + 
   if (isnull(documentSubject3.SubjectValue),0.0,documentSubject3.SubjectValue) + 
   if (isnull(t.AdditionalBall),0.0,t.AdditionalBall) + 
@@ -524,8 +552,10 @@ class Personspeciality extends ActiveRecord {
   ) + 
   if (isnull(t.Exam1Ball),0.0,t.Exam1Ball) + 
   if (isnull(t.Exam2Ball),0.0,t.Exam2Ball) + 
-  if (isnull(t.Exam3Ball),0.0,t.Exam3Ball)) DESC';
-    
+  if (isnull(t.Exam3Ball),0.0,t.Exam3Ball)) DESC,if(sum(benefit.isPV)>0,1,0) DESC';
+    if ($order_mode > 0){
+      $criteria->order = $rating_order;
+    }
     return new CActiveDataProvider($this, array(
         'criteria' => $criteria,
         'sort' => array(
@@ -545,9 +575,13 @@ class Personspeciality extends ActiveRecord {
                     'asc' => 'person.idPerson',
                     'desc' => 'person.idPerson DESC',
                 ),
-                'docs.idDocuments' => array(
-                    'asc' => 'docs.idDocuments',
-                    'desc' => 'docs.idDocuments DESC',
+//                'docs.idDocuments' => array(
+//                    'asc' => 'docs.idDocuments',
+//                    'desc' => 'docs.idDocuments DESC',
+//                ),
+                'benefit.BenefitName' => array(
+                    'asc' => 'benefit.BenefitName',
+                    'desc' => 'benefit.BenefitName DESC',
                 ),
                 'facultet.FacultetFullName' => array(
                     'asc' => 'facultet.FacultetFullName',
@@ -557,7 +591,7 @@ class Personspeciality extends ActiveRecord {
             ),
         ),
         'pagination' => array(
-            'pageSize' => 15
+            'pageSize' => $page_size
         ),
     ));
   }

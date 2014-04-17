@@ -433,7 +433,8 @@ class PersonspecialityController extends Controller {
     $reqSpeciality = Yii::app()->request->getParam('Specialities',null);
     $reqFaculty = Yii::app()->request->getParam('Facultets',null);
     $reqDocuments = Yii::app()->request->getParam('Documents',null);
-
+    $reqBenefits = Yii::app()->request->getParam('Benefit',null);
+    
     //var_dump($_GET);exit();
 
     $person = new Person('search');
@@ -456,18 +457,35 @@ class PersonspecialityController extends Controller {
     if ($reqDocuments){
       $doc->attributes = $reqDocuments;
     }
+    $benefit = new Benefit('search');
+    $benefit->unsetAttributes();  // clear any default values
+    if ($reqBenefits){
+      $benefit->attributes = $reqBenefits;
+    }
     
     $model = new Personspeciality();
     $model->searchPerson = $person;
     $model->searchSpeciality = $speciality;
     $model->searchFaculty = $faculty;
     $model->searchDoc = $doc;
+    $model->searchBenefit = $benefit;
     
-    $model->NAME = $reqPersonspeciality['NAME'];
-    $model->SPEC = $reqPersonspeciality['SPEC'];
-    $model->idPersonSpeciality = $reqPersonspeciality['idPersonSpeciality'];
+    if (isset($reqPersonspeciality['NAME'])){
+      $model->NAME = $reqPersonspeciality['NAME'];
+    }
+    if (isset($reqPersonspeciality['SPEC'])){
+      $model->SPEC = $reqPersonspeciality['SPEC'];
+    }
+    if (isset($reqPersonspeciality['idPersonSpeciality'])){
+      $model->idPersonSpeciality = $reqPersonspeciality['idPersonSpeciality'];
+    }
+    if (isset($reqPersonspeciality['order_mode'])){
+      $model->order_mode = $reqPersonspeciality['order_mode'];
+    }
+    if (isset($reqPersonspeciality['page_size'])){
+      $model->page_size = $reqPersonspeciality['page_size'];
+    }
     
-       
     $data = $model->search_rel();
     $this->layout = '//layouts/main';
     $this->render('/personspeciality/rating',array(

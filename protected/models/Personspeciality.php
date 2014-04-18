@@ -69,22 +69,25 @@ class Personspeciality extends ActiveRecord {
   public $isHigherEducation = 0;
   public $isCopyEntrantDoc = 1;
   
-  /* @var $searchPerson Person */
-  /* @var $searchSpeciality Specialities */
   /* @var $searchFaculty Facultets */
-  /* @var $searchDoc Documents */
   /* @var $searchBenefit Benefits */
-  public $searchPerson;
-  public $searchSpeciality;
   public $searchFaculty;
-  public $searchDoc;
   public $searchBenefit;
   
+  public $searchID;
   public $NAME;
   public $SPEC;
   public $Baldetail;
   public $order_mode;
+  public $edbo_mode;
   public $page_size;
+  public $DocValues;
+  public $DocTypes;
+  public $BenefitList;
+  public $isOutOfCompList;
+  public $isExtraEntryList;
+  
+  public static $PointMap = array();
 
   /**
    * Returns the static model of the specified AR class.
@@ -94,7 +97,14 @@ class Personspeciality extends ActiveRecord {
   public static function model($className = __CLASS__) {
     return parent::model($className);
   }
-
+  
+  public static function getPointMap(){
+    //таблиця відповідностей значення у 12-бальній шкалі значенню у 200-бальній шкалі
+    if (empty(Personspeciality::model()->PointMap)){
+      Personspeciality::model()->PointMap = CHtml::ListData(Atestatvalue::model()->findAll(),'AtestatValue','ZnoValue');
+    }
+    return Personspeciality::model()->PointMap;
+  }
   /**
    * @return string the associated database table name
    */
@@ -294,6 +304,7 @@ class Personspeciality extends ActiveRecord {
         'documentSubject3' => array(self::BELONGS_TO, 'Documentsubject', 'DocumentSubject3'),
         'olymp' => array(self::BELONGS_TO, 'Olympiadsawards', 'OlympiadID'),
         'status' => array(self::BELONGS_TO, 'Personrequeststatustypes', 'StatusID'),
+        'edbo' => array(self::BELONGS_TO, 'EdboData', 'edboID'),
 //                     
     );
   }
@@ -349,7 +360,8 @@ class Personspeciality extends ActiveRecord {
         "edboID" => "ЄДБО Код",
         "StatusID" => "Статус заявки",
         "order_mode" => "Сортування у режимі 'РЕЙТИНГ' (за балами)",
-        "page_size" => "Кількість рядків для однієї сторінки у списку",
+        "edbo_mode" => "Вибрати тільки ті дані, що завантажені з таблиці ЄДЕБО",
+        "page_size" => "Кількість рядків (елементів) для однієї сторінки у таблиці заявок",
         "SPEC" => "Ключові слова через пробіл для вибірки за спеціальністю",
     );
   }
@@ -398,24 +410,34 @@ class Personspeciality extends ActiveRecord {
    */
   public function search_rel(){
     $order_mode = 0;
-    $page_size = 5;
+    $page_size = 15;
     if (is_numeric($this->order_mode)){
       $order_mode = $this->order_mode;
     }
     if (is_numeric($this->page_size) && $this->page_size > 0){
       $page_size = $this->page_size;
     }
+    
     $criteria = new CDbCriteria();
     //З якими відношеннями маємо справу
     $with_rel = array();
     array_push($with_rel, 'sepciality');
     array_push($with_rel, 'person');
+    array_push($with_rel, 'olymp');
+    array_push($with_rel, 'educationForm');
+    array_push($with_rel, 'edbo');
     array_push($with_rel, 'documentSubject1');
     array_push($with_rel, 'documentSubject2');
     array_push($with_rel, 'documentSubject3');
-    array_push($with_rel, 'olymp');
-    array_push($with_rel, 'educationForm');
+    array_push($with_rel, 'documentSubject1.subject1');
+    array_push($with_rel, 'documentSubject2.subject2');
+    array_push($with_rel, 'documentSubject3.subject3');
+    
     $with_rel['sepciality.facultet'] = array('select' => false);
+//    $with_rel['edbo'] = array('select' => false);
+//    $with_rel['documentSubject1'] = array('select' => false);
+//    $with_rel['documentSubject2'] = array('select' => false);
+//    $with_rel['documentSubject3'] = array('select' => false);
     $with_rel['person.docs'] = array('select' => false);
     //array_push($with_rel, 'person.benefits.benefit');
     $with_rel['person.benefits.benefit'] = array('select' => false);
@@ -425,8 +447,19 @@ class Personspeciality extends ActiveRecord {
     //формат поля спеціальності: [код_спеціальності назва_спеціальності[ (назва_напряму)] , форма: назва_форми]
     //можна ще додати поле для деталізації балів (рейтингу), але це для зневадження 
     $criteria->select = array('*',
+        new CDbExpression('GROUP_CONCAT( benefit.BenefitName '
+                . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS BenefitList'),
+        new CDbExpression('GROUP_CONCAT( docs.AtestatValue '
+                . 'ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocValues'),
+        new CDbExpression('GROUP_CONCAT( docs.TypeID ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocTypes'),
         new CDbExpression('COUNT(DISTINCT benefit.idBenefit) AS cntBenefit'),
-        new CDbExpression("concat_ws(' ',person.LastName,person.FirstName,person.MiddleName) AS NAME"),
+        new CDbExpression('if(sum(benefit.isPZK)>0,1,0) AS isOutOfComp'),
+        new CDbExpression('if(sum(benefit.isPV)>0,1,0) AS isExtraEntry'),
+        new CDbExpression('GROUP_CONCAT( benefit.isPZK '
+                . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS isOutOfCompList'),
+        new CDbExpression('GROUP_CONCAT( benefit.isPV '
+                . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS isExtraEntryList'),
+        new CDbExpression("concat_ws(' ',trim(person.LastName),trim(person.FirstName),person.MiddleName) AS NAME"),
         new CDbExpression("concat_ws(' ',"
                 . "sepciality.SpecialityClasifierCode,"
                 . "(case substr(sepciality.SpecialityClasifierCode,1,1) when '6' then "
@@ -482,22 +515,34 @@ class Personspeciality extends ActiveRecord {
     //оформлення єдиного запиту на вибірку
     $criteria->together = true;
     
+    if (is_numeric($this->searchID)){
+      $criteria->addCondition('(t.idPersonSpeciality='.$this->searchID.') '
+              . 'OR (person.idPerson='.$this->searchID.') '
+              . 'OR (t.edboID='.$this->searchID.')');
+    }
     $criteria->compare('facultet.FacultetFullName', $this->searchFaculty->FacultetFullName,true);
-    $criteria->compare('t.idPersonSpeciality', $this->idPersonSpeciality);
-    $criteria->compare('person.idPerson', $this->searchPerson->idPerson);
-    $criteria->compare('docs.idDocuments', $this->searchDoc->idDocuments);
+    
+    $criteria->addCondition('t.StatusID NOT IN (2,3,6)');
+    $criteria->addCondition('docs.TypeID IN (2,11,12)');
+    
     if (is_numeric($this->searchBenefit->BenefitName)){
       $criteria->having = 'cntBenefit='.$this->searchBenefit->BenefitName;
       if ($this->searchBenefit->BenefitName > 1){
         $page_size = 1000;
       }
     }
+    if ($this->edbo_mode){
+      $criteria->addCondition('edbo.ID IS NOT NULL');
+    }
     if (!is_numeric($this->searchBenefit->BenefitName)){
       $criteria->compare('benefit.BenefitName', $this->searchBenefit->BenefitName,true);
     }
     if ($this->NAME){
-      $criteria->addCondition('concat_ws(" ",person.LastName,person.FirstName,person.MiddleName) '
-            . 'LIKE "%'.$this->NAME.'%"');
+      $name_keys = explode(' ',$this->NAME);
+      foreach ($name_keys as $key){
+        $criteria->addCondition('concat_ws(" ",person.LastName,person.FirstName,person.MiddleName) '
+              . 'LIKE "%'.$key.'%"');
+      }
     }
     if ($this->SPEC){
       $keys = explode(' ',$this->SPEC);
@@ -571,14 +616,6 @@ class Personspeciality extends ActiveRecord {
                     'asc' => 'SPEC',
                     'desc' => 'SPEC DESC',
                 ),
-                'person.idPerson' => array(
-                    'asc' => 'person.idPerson',
-                    'desc' => 'person.idPerson DESC',
-                ),
-//                'docs.idDocuments' => array(
-//                    'asc' => 'docs.idDocuments',
-//                    'desc' => 'docs.idDocuments DESC',
-//                ),
                 'benefit.BenefitName' => array(
                     'asc' => 'benefit.BenefitName',
                     'desc' => 'benefit.BenefitName DESC',

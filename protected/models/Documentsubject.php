@@ -83,7 +83,9 @@ class Documentsubject extends ActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'document' => array(self::BELONGS_TO, 'Documents', 'DocumentID'),
-			'subject' => array(self::BELONGS_TO, 'Subjects', 'SubjectID'),
+			'subject1' => array(self::BELONGS_TO, 'Subjects', 'SubjectID'),
+			'subject2' => array(self::BELONGS_TO, 'Subjects', 'SubjectID'),
+			'subject3' => array(self::BELONGS_TO, 'Subjects', 'SubjectID'),
 			'personsepcialities' => array(self::HAS_MANY, 'Personsepciality', 'DocumentSubject2'),
 			'personsepcialities1' => array(self::HAS_MANY, 'Personsepciality', 'DocumentSubject3'),
 			'personsepcialities2' => array(self::HAS_MANY, 'Personsepciality', 'DocumentSubject1'),

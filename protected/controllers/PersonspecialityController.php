@@ -429,33 +429,15 @@ class PersonspecialityController extends Controller {
    */
   public function actionRating(){
     $reqPersonspeciality = Yii::app()->request->getParam('Personspeciality',null);
-    $reqPerson = Yii::app()->request->getParam('Person',null);
-    $reqSpeciality = Yii::app()->request->getParam('Specialities',null);
     $reqFaculty = Yii::app()->request->getParam('Facultets',null);
-    $reqDocuments = Yii::app()->request->getParam('Documents',null);
     $reqBenefits = Yii::app()->request->getParam('Benefit',null);
     
     //var_dump($_GET);exit();
 
-    $person = new Person('search');
-    $person->unsetAttributes();  // clear any default values
-    if ($reqPerson){
-      $person->attributes = $reqPerson;
-    }
-    $speciality = new Specialities('search');
-    $speciality->unsetAttributes();  // clear any default values
-    if ($reqSpeciality){
-      $speciality->attributes = $reqSpeciality;
-    }
     $faculty = new Facultets('search');
     $faculty->unsetAttributes();  // clear any default values
     if ($reqFaculty){
       $faculty->attributes = $reqFaculty;
-    }
-    $doc = new Documents('search');
-    $doc->unsetAttributes();  // clear any default values
-    if ($reqDocuments){
-      $doc->attributes = $reqDocuments;
     }
     $benefit = new Benefit('search');
     $benefit->unsetAttributes();  // clear any default values
@@ -464,12 +446,12 @@ class PersonspecialityController extends Controller {
     }
     
     $model = new Personspeciality();
-    $model->searchPerson = $person;
-    $model->searchSpeciality = $speciality;
     $model->searchFaculty = $faculty;
-    $model->searchDoc = $doc;
     $model->searchBenefit = $benefit;
     
+    if (isset($reqPersonspeciality['searchID'])){
+      $model->searchID = $reqPersonspeciality['searchID'];
+    }
     if (isset($reqPersonspeciality['NAME'])){
       $model->NAME = $reqPersonspeciality['NAME'];
     }
@@ -481,6 +463,9 @@ class PersonspecialityController extends Controller {
     }
     if (isset($reqPersonspeciality['order_mode'])){
       $model->order_mode = $reqPersonspeciality['order_mode'];
+    }
+    if (isset($reqPersonspeciality['edbo_mode'])){
+      $model->edbo_mode = $reqPersonspeciality['edbo_mode'];
     }
     if (isset($reqPersonspeciality['page_size'])){
       $model->page_size = $reqPersonspeciality['page_size'];

@@ -78,17 +78,31 @@ class Personspeciality extends ActiveRecord {
   public $NAME;
   public $SPEC;
   public $Baldetail;
-  public $order_mode;
+  public $rating_order_mode;
   public $edbo_mode;
   public $page_size;
+  public $mistakes_only;
   public $DocValues;
   public $DocTypes;
   public $BenefitList;
+  public $idBenefitList;
   public $isOutOfCompList;
   public $isExtraEntryList;
+  public $isOutOfComp;
+  public $isExtraEntry;
+  
+  private static $rating_counter = array();
+  public static $is_rating_order = false;
+
+  public static $C_QUOTA = 3;
+  public static $C_OUTOFCOMPETITION = 2;
+  public static $C_BUDGET = 1;
+  public static $C_CONTRACT = 0;
+  
   
   public static $PointMap = array();
-
+  public static $DocTypeNames = array();
+  
   /**
    * Returns the static model of the specified AR class.
    * @param string $className active record class name.
@@ -105,6 +119,48 @@ class Personspeciality extends ActiveRecord {
     }
     return Personspeciality::model()->PointMap;
   }
+
+  public static function getPersonDocTypes(){
+    //типи документів персони
+    if (empty(Personspeciality::model()->DocTypeNames)){
+      Personspeciality::model()->DocTypeNames = CHtml::ListData(PersonDocumentTypes::model()->findAll(),
+              'idPersonDocumentTypes','PersonDocumentTypesName');
+    }
+    return Personspeciality::model()->DocTypeNames;
+  }
+  
+  /**
+   * Встановлюються лічильники для формування рейтингу
+   * @param integer $_contract_counter - лічильник для контрактників
+   * @param integer $_budget_counter - лічильник для бюджетників
+   * @param integer $_pzk_counter - лічильник для пільговиків поза конкурсом
+   * @param integer $_quota_counter - лічильник для цільовиків
+   */
+  public static function setCounters($_contract_counter, $_budget_counter, $_pzk_counter, $_quota_counter){
+    Personspeciality::$rating_counter[Personspeciality::$C_CONTRACT] = $_contract_counter;
+    Personspeciality::$rating_counter[Personspeciality::$C_BUDGET] = $_budget_counter;
+    Personspeciality::$rating_counter[Personspeciality::$C_OUTOFCOMPETITION] = $_pzk_counter;
+    Personspeciality::$rating_counter[Personspeciality::$C_QUOTA] = $_quota_counter;
+  }
+  
+  /**
+   * Віднімає один від певного лічильника і повертає старе значення.
+   * Якщо лічильник дорівнює нулю або невизначений, повертає 0.
+   * @param integer $counter_index
+   */
+  public static function decrementCounter($counter_index){
+    if (isset(Personspeciality::$rating_counter[$counter_index])){
+      $old_value = Personspeciality::$rating_counter[$counter_index];
+      if ($old_value > 0){
+        $new_value = $old_value - 1;
+        Personspeciality::$rating_counter[$counter_index] = $new_value;
+        return $old_value;
+      }
+    }
+    return 0;
+  }
+  
+  
   /**
    * @return string the associated database table name
    */
@@ -359,8 +415,9 @@ class Personspeciality extends ActiveRecord {
         'RequestFromEB' => 'Эл-на за-ка',
         "edboID" => "ЄДБО Код",
         "StatusID" => "Статус заявки",
-        "order_mode" => "Сортування у режимі 'РЕЙТИНГ' (за балами)",
+        "rating_order_mode" => "Сортування у режимі 'РЕЙТИНГ' (за балами)",
         "edbo_mode" => "Вибрати тільки ті дані, що завантажені з таблиці ЄДЕБО",
+        "mistakes_only" => "Вибрати лише неспівпадання з таблицею ЄДЕБО",
         "page_size" => "Кількість рядків (елементів) для однієї сторінки у таблиці заявок",
         "SPEC" => "Ключові слова через пробіл для вибірки за спеціальністю",
     );
@@ -409,10 +466,10 @@ class Personspeciality extends ActiveRecord {
    * Enjoy this code with smiles.
    */
   public function search_rel(){
-    $order_mode = 0;
+    $rating_order_mode = 0;
     $page_size = 15;
-    if (is_numeric($this->order_mode)){
-      $order_mode = $this->order_mode;
+    if (is_numeric($this->rating_order_mode)){
+      $rating_order_mode = $this->rating_order_mode;
     }
     if (is_numeric($this->page_size) && $this->page_size > 0){
       $page_size = $this->page_size;
@@ -447,71 +504,29 @@ class Personspeciality extends ActiveRecord {
     //формат поля спеціальності: [код_спеціальності назва_спеціальності[ (назва_напряму)] , форма: назва_форми]
     //можна ще додати поле для деталізації балів (рейтингу), але це для зневадження 
     $criteria->select = array('*',
-        new CDbExpression('GROUP_CONCAT( benefit.BenefitName '
-                . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS BenefitList'),
-        new CDbExpression('GROUP_CONCAT( docs.AtestatValue '
-                . 'ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocValues'),
-        new CDbExpression('GROUP_CONCAT( docs.TypeID ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocTypes'),
-        new CDbExpression('COUNT(DISTINCT benefit.idBenefit) AS cntBenefit'),
-        new CDbExpression('if(sum(benefit.isPZK)>0,1,0) AS isOutOfComp'),
-        new CDbExpression('if(sum(benefit.isPV)>0,1,0) AS isExtraEntry'),
-        new CDbExpression('GROUP_CONCAT( benefit.isPZK '
-                . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS isOutOfCompList'),
-        new CDbExpression('GROUP_CONCAT( benefit.isPV '
-                . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS isExtraEntryList'),
-        new CDbExpression("concat_ws(' ',trim(person.LastName),trim(person.FirstName),person.MiddleName) AS NAME"),
-        new CDbExpression("concat_ws(' ',"
-                . "sepciality.SpecialityClasifierCode,"
-                . "(case substr(sepciality.SpecialityClasifierCode,1,1) when '6' then "
-                . "sepciality.SpecialityDirectionName else sepciality.SpecialityName end),"
-                . "(case sepciality.SpecialitySpecializationName when '' then '' "
-                . " else concat('(',sepciality.SpecialitySpecializationName,')') end)"
-                . ",',',concat('форма: ',educationForm.PersonEducationFormName)) AS SPEC"),
-//        new CDbExpression('concat(if (isnull(documentSubject1.SubjectValue),0.0,documentSubject1.SubjectValue),"+", 
-//  if (isnull(documentSubject2.SubjectValue),0.0,documentSubject2.SubjectValue),"+", 
-//  if (isnull(documentSubject3.SubjectValue),0.0,documentSubject3.SubjectValue),"+", 
-//  if (isnull(t.AdditionalBall),0.0,t.AdditionalBall),"+", 
-//  if (isnull(t.CoursedpBall),0.0,t.CoursedpBall),"+", 
-//  if (isnull(olymp.OlympiadAwardBonus),0.0,olymp.OlympiadAwardBonus),"+", 
-//  if (isnull(
-//     (SELECT documents.AtestatValue 
-//      FROM documents 
-//      WHERE documents.TypeID = 2 AND documents.PersonID=t.PersonID AND substr(sepciality.SpecialityClasifierCode,1,1) like "6" LIMIT 1
-//     )),
-//    0.0,
-//    round(((SELECT atestatvalue.ZnoValue 
-//      FROM atestatvalue 
-//      WHERE atestatvalue.AtestatValue like round(((
-//             SELECT documents.AtestatValue 
-//             FROM documents 
-//             WHERE documents.TypeID = 2 AND documents.PersonID=t.PersonID LIMIT 1)
-//      ),1) OR
-//        atestatvalue.AtestatValue = round(((
-//             SELECT documents.AtestatValue 
-//             FROM documents 
-//             WHERE documents.TypeID = 2 AND documents.PersonID=t.PersonID LIMIT 1)
-//        ),1)
-//     )
-//    ),2)
-//  ),"+", 
-//
-//  if (isnull(
-//     (SELECT max(documents.AtestatValue)
-//      FROM documents 
-//      WHERE documents.PersonID=t.PersonID AND substr(sepciality.SpecialityClasifierCode,1,1) not like "6" LIMIT 1
-//     )),
-//    0.0,
-//    round(((SELECT max(documents.AtestatValue)
-//      FROM documents 
-//      WHERE documents.PersonID=t.PersonID AND documents.TypeID IN (11,12) LIMIT 1
-//     )),2)
-//  ),"+", 
-//
-//  if (isnull(t.Exam1Ball),0.0,t.Exam1Ball),"+", 
-//  if (isnull(t.Exam2Ball),0.0,t.Exam2Ball),"+", 
-//  if (isnull(t.Exam3Ball),0.0,t.Exam3Ball)) as Baldetail')
+      new CDbExpression('GROUP_CONCAT(benefit.BenefitName '
+              . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS BenefitList'),
+      new CDbExpression('GROUP_CONCAT(benefit.idBenefit '
+              . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS idBenefitList'),
+      new CDbExpression('GROUP_CONCAT( IF ((docs.AtestatValue IS NULL), 0.0, docs.AtestatValue) '
+              . 'ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocValues'),
+      new CDbExpression('GROUP_CONCAT(docs.TypeID ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocTypes'),
+      new CDbExpression('COUNT(DISTINCT benefit.idBenefit) AS cntBenefit'),
+      new CDbExpression('if(sum(benefit.isPZK)>0,1,0) AS isOutOfComp'),
+      new CDbExpression('if(sum(benefit.isPV)>0,1,0) AS isExtraEntry'),
+      new CDbExpression('GROUP_CONCAT(benefit.isPZK '
+              . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS isOutOfCompList'),
+      new CDbExpression('GROUP_CONCAT(benefit.isPV '
+              . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS isExtraEntryList'),
+      new CDbExpression("concat_ws(' ',trim(person.LastName),trim(person.FirstName),person.MiddleName) AS NAME"),
+      new CDbExpression("concat_ws(' ',"
+              . "sepciality.SpecialityClasifierCode,"
+              . "(case substr(sepciality.SpecialityClasifierCode,1,1) when '6' then "
+              . "sepciality.SpecialityDirectionName else sepciality.SpecialityName end),"
+              . "(case sepciality.SpecialitySpecializationName when '' then '' "
+              . " else concat('(',sepciality.SpecialitySpecializationName,')') end)"
+              . ",',',concat('форма: ',educationForm.PersonEducationFormName)) AS SPEC"),
         );
-    $criteria->group = "t.idPersonSpeciality";
     //оформлення єдиного запиту на вибірку
     $criteria->together = true;
     
@@ -522,8 +537,29 @@ class Personspeciality extends ActiveRecord {
     }
     $criteria->compare('facultet.FacultetFullName', $this->searchFaculty->FacultetFullName,true);
     
+    
+    if ($this->mistakes_only){
+      $criteria->addCondition('(
+      (edbo.DocPoint NOT IN ((SELECT documents.AtestatValue FROM documents WHERE documents.PersonID = t.PersonID 
+        AND documents.AtestatValue IS NOT NULL))) 
+
+      OR (edbo.PriorityEntry <> IF(((SELECT MAX(b.isPV) FROM personbenefits pb LEFT JOIN benefit b ON pb.BenefitID = b.idBenefit 
+        WHERE t.PersonID=pb.PersonID AND b.isPV IS NOT NULL)) IS NULL, 0, 
+        ((SELECT MAX(b.isPV) FROM personbenefits pb LEFT JOIN benefit b ON pb.BenefitID = b.idBenefit 
+          WHERE t.PersonID=pb.PersonID AND b.isPV IS NOT NULL))))
+
+      OR (edbo.Benefit <> IF(((SELECT MAX(b.isPZK) FROM personbenefits pb LEFT JOIN benefit b ON pb.BenefitID = b.idBenefit 
+        WHERE t.PersonID=pb.PersonID AND b.isPZK IS NOT NULL )) IS NULL, 0, 
+        ((SELECT MAX(b.isPZK) FROM personbenefits pb LEFT JOIN benefit b ON pb.BenefitID = b.idBenefit 
+          WHERE t.PersonID=pb.PersonID AND b.isPZK IS NOT NULL ))))
+
+      OR (edbo.Quota=0 AND t.Quota1=1)
+      OR (edbo.Quota=1 AND (t.Quota1 IS NULL OR t.Quota1 = 0))
+   )');
+    }
+    
     $criteria->addCondition('t.StatusID NOT IN (2,3,6)');
-    $criteria->addCondition('docs.TypeID IN (2,11,12)');
+    $criteria->addCondition('docs.AtestatValue IS NOT NULL');
     
     if (is_numeric($this->searchBenefit->BenefitName)){
       $criteria->having = 'cntBenefit='.$this->searchBenefit->BenefitName;
@@ -544,7 +580,7 @@ class Personspeciality extends ActiveRecord {
               . 'LIKE "%'.$key.'%"');
       }
     }
-    if ($this->SPEC){
+    if ($this->SPEC && !$rating_order_mode){
       $keys = explode(' ',$this->SPEC);
       foreach ($keys as $key){
       $criteria->addCondition("concat_ws(' ',"
@@ -555,51 +591,36 @@ class Personspeciality extends ActiveRecord {
                 . " else concat('(',sepciality.SpecialitySpecializationName,')') end)"
                 . ",',',concat('форма: ',educationForm.PersonEducationFormName)) LIKE '%".$key."%'");
       }
+    } else if ($rating_order_mode){
+      $criteria->compare("concat_ws(' ',"
+                . "sepciality.SpecialityClasifierCode,"
+                . "(case substr(sepciality.SpecialityClasifierCode,1,1) when '6' then "
+                . "sepciality.SpecialityDirectionName else sepciality.SpecialityName end),"
+                . "(case sepciality.SpecialitySpecializationName when '' then '' "
+                . " else concat('(',sepciality.SpecialitySpecializationName,')') end)"
+                . ",',',concat('форма: ',educationForm.PersonEducationFormName))",$this->SPEC);
     }
     
-    $rating_order = 'if(sum(benefit.isPZK)>0,1,0) DESC, (if (isnull(documentSubject1.SubjectValue),0.0,documentSubject1.SubjectValue) + 
-  if (isnull(documentSubject2.SubjectValue),0.0,documentSubject2.SubjectValue) + 
-  if (isnull(documentSubject3.SubjectValue),0.0,documentSubject3.SubjectValue) + 
-  if (isnull(t.AdditionalBall),0.0,t.AdditionalBall) + 
-  if (isnull(t.CoursedpBall),0.0,t.CoursedpBall) + 
-  if (isnull(olymp.OlympiadAwardBonus),0.0,olymp.OlympiadAwardBonus) + 
-  if (isnull(
-     (SELECT documents.AtestatValue 
-      FROM documents 
-      WHERE documents.TypeID = 2 AND documents.PersonID=t.PersonID AND substr(sepciality.SpecialityClasifierCode,1,1) like "6" LIMIT 1
-     )),
-    0.0,
-    round(((SELECT atestatvalue.ZnoValue 
-      FROM atestatvalue 
-      WHERE atestatvalue.AtestatValue like round(((
-             SELECT documents.AtestatValue 
-             FROM documents 
-             WHERE documents.TypeID = 2 AND documents.PersonID=t.PersonID LIMIT 1)
-      ),1) OR
-        atestatvalue.AtestatValue = round(((
-             SELECT documents.AtestatValue 
-             FROM documents 
-             WHERE documents.TypeID = 2 AND documents.PersonID=t.PersonID LIMIT 1)
-        ),1)
-     )
-    ),2)
-  ) +  
-  if (isnull(
-     (SELECT documents.AtestatValue 
-      FROM documents 
-      WHERE documents.PersonID=t.PersonID AND documents.TypeID IN (11,12) LIMIT 1
-     )),
-    0.0,
-    round(((SELECT max(documents.AtestatValue)
-      FROM documents 
-      WHERE documents.PersonID=t.PersonID AND documents.TypeID IN (11,12) LIMIT 1
-     )),2)
-  ) + 
-  if (isnull(t.Exam1Ball),0.0,t.Exam1Ball) + 
-  if (isnull(t.Exam2Ball),0.0,t.Exam2Ball) + 
-  if (isnull(t.Exam3Ball),0.0,t.Exam3Ball)) DESC,if(sum(benefit.isPV)>0,1,0) DESC';
-    if ($order_mode > 0){
+    $criteria->group = "t.idPersonSpeciality";
+    
+    $rating_order = '
+  isOutOfComp DESC,
+  IF (t.Quota1 IS NULL, 0, t.Quota1) DESC,
+  (ROUND(((((select Znovalue FROM atestatvalue WHERE Atestatvalue IN (ROUND(MAX(docs.AtestatValue),1),MAX(docs.AtestatValue)) )))+
+    IF(ISNULL(documentSubject1.SubjectValue),0.0,documentSubject1.SubjectValue) + 
+    IF(ISNULL(documentSubject2.SubjectValue),0.0,documentSubject2.SubjectValue) + 
+    IF(ISNULL(documentSubject3.SubjectValue),0.0,documentSubject3.SubjectValue) + 
+    IF(ISNULL(t.AdditionalBall),0.0,t.AdditionalBall) + 
+    IF(ISNULL(t.CoursedpBall),0.0,t.CoursedpBall) + 
+    IF(ISNULL(olymp.OlympiadAwardBonus),0.0,olymp.OlympiadAwardBonus) + 
+    IF(ISNULL(t.Exam1Ball),0.0,t.Exam1Ball) + 
+    IF(ISNULL(t.Exam2Ball),0.0,t.Exam2Ball) + 
+    IF(ISNULL(t.Exam3Ball),0.0,t.Exam3Ball)),2)) DESC,
+  IF(SUM(benefit.isPV)>0,1,0) DESC';
+    if ($rating_order_mode > 0){
       $criteria->order = $rating_order;
+      $page_size = 50000;
+      Personspeciality::$is_rating_order = true;
     }
     return new CActiveDataProvider($this, array(
         'criteria' => $criteria,

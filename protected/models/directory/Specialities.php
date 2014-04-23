@@ -17,10 +17,12 @@
  * @property string $SemPrice
  * @property string $WordPrice	
  * @property integer $StudyPeriodID
- * @property string $SpecialityDirectionName	
+ * @property string $SpecialityDirectionName
+ * @property integer $PersonEducationFormID
  * The followings are the available model relations:
  * @property Personsepciality[] $personsepcialities
  * @property Facultets $facultet
+ * @property Personeducationforms $eduform
  */
 class Specialities extends CActiveRecord
 {
@@ -29,6 +31,7 @@ class Specialities extends CActiveRecord
 	 * @param string $className active record class name.
 	 * @return Specialities the static model class
 	 */
+  public $tSPEC;
         public static function DropDownMask($FacultetID = 0, $EducationFormID = 0){
             $user = Yii::app()->user->getUserModel();
             $records = array();
@@ -166,6 +169,7 @@ class Specialities extends CActiveRecord
 		return array(
 			'personsepcialities' => array(self::HAS_MANY, 'Personsepciality', 'SepcialityID'),
 			'facultet' => array(self::BELONGS_TO, 'Facultets', 'FacultetID'),
+			'eduform' => array(self::BELONGS_TO, 'Personeducationforms', 'PersonEducationFormID'),
                        
 		);
 	}

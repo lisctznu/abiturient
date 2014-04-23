@@ -51,6 +51,11 @@ class SpecialitiesController extends Controller
 				'actions'=>array('index','view','admin','delete','create','update', "ajaxcreate","ajaxupdate"),
 				'roles'=>array("Root","Admin"),
 			),
+			array('allow', // allow admin user to perform 'admin' and 'delete' actions
+				'actions'=>array('autocomplete'),
+				'users'=>array("*"),
+			),
+
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -180,4 +185,40 @@ class SpecialitiesController extends Controller
 			Yii::app()->end();
 		}
 	}
+  
+  public function actionAutocomplete(){
+    if ( Yii::app()->request->isAjaxRequest ) {
+      $data = array();
+      $reqTerm = Yii::app()->request->getParam('term',null);
+      if ($reqTerm){
+        $criteria = new CDbCriteria();
+        $criteria->with = array('eduform');
+        $criteria->together = true;
+        $criteria->select = array(
+           'idSpeciality',
+            new CDbExpression("concat_ws(' ',"
+                    . "SpecialityClasifierCode,"
+                    . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
+                    . "SpecialityDirectionName else SpecialityName end),"
+                    . "(case SpecialitySpecializationName when '' then '' "
+                    . " else concat('(',SpecialitySpecializationName,')') end)"
+                    . ",',',concat('форма: ',eduform.PersonEducationFormName)) AS tSPEC"
+            ),
+        );
+        $criteria->compare("concat_ws(' ',"
+                    . "SpecialityClasifierCode,"
+                    . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
+                    . "SpecialityDirectionName else SpecialityName end),"
+                    . "(case SpecialitySpecializationName when '' then '' "
+                    . " else concat('(',SpecialitySpecializationName,')') end)"
+                    . ",',',concat('форма: ',eduform.PersonEducationFormName))",$reqTerm,true);
+        $criteria->order = 'tSPEC ASC';
+        $data = CHtml::ListData(Specialities::model()->findAll($criteria),'idSpeciality','tSPEC');
+        $data['count'] = count($data);
+        //var_dump($data);
+        echo CJSON::encode( $data );
+        
+      }
+    }
+  }
 }

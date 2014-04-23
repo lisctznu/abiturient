@@ -461,8 +461,11 @@ class PersonspecialityController extends Controller {
     if (isset($reqPersonspeciality['idPersonSpeciality'])){
       $model->idPersonSpeciality = $reqPersonspeciality['idPersonSpeciality'];
     }
-    if (isset($reqPersonspeciality['order_mode'])){
-      $model->order_mode = $reqPersonspeciality['order_mode'];
+    if (isset($reqPersonspeciality['rating_order_mode'])){
+      $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
+    }
+    if (isset($reqPersonspeciality['mistakes_only'])){
+      $model->mistakes_only = $reqPersonspeciality['mistakes_only'];
     }
     if (isset($reqPersonspeciality['edbo_mode'])){
       $model->edbo_mode = $reqPersonspeciality['edbo_mode'];

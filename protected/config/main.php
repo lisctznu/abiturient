@@ -158,7 +158,7 @@ return array(
             array(
                'class' => 'CProfileLogRoute',
                'levels' => 'profile',
-               'enabled' => true,
+               'enabled' => false,
             ),
          // uncomment the following to show log messages on web pages
 

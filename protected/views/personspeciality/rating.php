@@ -26,6 +26,9 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->clientScript->getCoreScrip
 <script type="text/javascript">
 $(function (){
   $('#rating-params-form').submit(function(){
+    if ($(this).attr('action') === '<?php echo Yii::app()->CreateUrl('/personspeciality/excelrating'); ?>'){
+      return true; 
+    }
     if ($('#Personspeciality_rating_order_mode').is(':checked')){
         if ($('#Personspeciality_SPEC').val() === ''){
           alert('Введіть ключові слова спеціальності.');
@@ -65,7 +68,8 @@ $(function (){
 
 $(function (){
   $("#Personspeciality_SPEC").autocomplete(
-    {delay:1000, minLength:4, "showAnim":"fold","source":"<?php echo Yii::app()->CreateUrl("/specialities/autocomplete"); ?>"});
+    {delay:1000, minLength:4, "showAnim":"fold",
+      "source":"<?php echo Yii::app()->CreateUrl("/specialities/autocomplete"); ?>"});
 });
 
 $(function (){
@@ -73,9 +77,11 @@ $(function (){
     if ($('#Personspeciality_rating_order_mode').is(':checked')){
       $('#Personspeciality_page_size').val('автоматично');
       $('#Personspeciality_page_size').attr('readonly',true);
+      $('#statuses').slideDown();
     } else {
       $('#Personspeciality_page_size').val('15');
       $('#Personspeciality_page_size').attr('readonly',false);
+      $('#statuses').slideUp();
     }
   });
 });
@@ -97,7 +103,7 @@ $(function (){
     <span class="label label-important">погано</span>
   </div>
   <div class="span5">
-    <span style="font-size: 8pt; font-family: Tahoma; color: black; padding: 4px;">
+    <span style="font-size: 8pt; font-family: Tahoma; color: 0; padding: 4px;">
       нейтрально
     </span>
     <span style="font-size: 8pt; font-family: Tahoma; color: green; padding: 4px;">
@@ -115,6 +121,29 @@ $(function (){
 <?php echo $form->label($model, 'rating_order_mode', array(
     'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
 )); ?>
+  
+  <div id="statuses" style='display: none;'>
+<?php echo $form->checkBox($model, 'status_confirmed', array(
+    'style' => 'float:left;margin-right: 10px;', 'checked' => 'checked',
+)); ?>
+<?php echo $form->label($model, 'status_confirmed', array(
+    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+)); ?>
+<?php echo $form->checkBox($model, 'status_committed', array(
+    'style' => 'float:left;margin-right: 10px;', 'checked' => 'checked',
+)); ?>
+<?php echo $form->label($model, 'status_committed', array(
+    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+)); ?>
+<?php echo $form->checkBox($model, 'status_submitted', array(
+    'style' => 'float:left;margin-right: 10px;', 'checked' => 'checked',
+)); ?>
+<?php echo $form->label($model, 'status_submitted', array(
+    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+)); ?>
+    
+    
+  </div>
 
 <?php echo $form->checkBox($model, 'mistakes_only', array(
     'style' => 'float:left;margin-right: 10px;'
@@ -157,18 +186,43 @@ echo $form->textField($model, 'SPEC', array(
 ?>
     </div>
   </div>
+  <div class="span12">
+    <div class="span6">
     <?php
     $this->widget("bootstrap.widgets.TbButton", array(
               'buttonType'=>'submit',
               'type'=>'primary',
-              "size"=>"mini",
+              "size"=>"small",
+              "icon" => "eye-open",
               'htmlOptions' => array(
                 'id' => 'RatingButton',
+                'class' => 'span9',
+                'onclick' => '$(\'#rating-params-form\').attr(\'action\',\''.Yii::app()->createUrl($this->route).'\');$(\'#rating-params-form\').submit();',
                ),
               'label'=>'Створити вибірку',
-    )
-        ); 
+        )
+    ); 
     ?>
+    </div>
+    <div class="span6">
+    <?php
+    $this->widget("bootstrap.widgets.TbButton", array(
+              'buttonType'=>'link',
+              'type'=>'primary',
+              "size"=>"small",
+              "icon"=>"file",
+              'htmlOptions' => array(
+                'id' => 'RatingExcel',
+                'class' => 'span9',
+                'onclick' => '$(\'#rating-params-form\').attr(\'action\',\''.Yii::app()->CreateUrl('/personspeciality/excelrating').'\');$(\'#rating-params-form\').submit();',
+               ),
+              'label'=>'Сформувати Excel-файл',
+              'url' => '#'
+        )
+    ); 
+    ?>
+    </div>
+  </div>
 </div>
 
 
@@ -218,7 +272,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->Quota2 - $was;
          echo '<span '
          . ' title="Місце у рейтингу цільового прийому за попередньою інформацією." '
-         . ' style="color: #55830c; font-size: 11pt;">'
+         . ' style="color: #F89406; font-size: 11pt;">'
          . $local_counter
          . '</span>';
        } else {
@@ -229,6 +283,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          . '</span>';
        }
      }
+     
      if ((Personspeciality::$is_rating_order) && $data->isOutOfComp && !$data->Quota1){
        //поза конкурсом
        $was = Personspeciality::decrementCounter(Personspeciality::$C_OUTOFCOMPETITION);
@@ -237,7 +292,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->Quota1 - $was;
          echo '<span '
          . ' title="Місце у рейтингу прийому поза конкурсом за попередньою інформацією." '
-         . ' style="color: #55830c; font-size: 11pt;">'
+         . ' style="color: #05B2D2; font-size: 11pt;">'
          . $local_counter
          . '</span>';
        } else {
@@ -248,6 +303,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          . '</span>';
        }
      }
+     
      if ((Personspeciality::$is_rating_order) && $data->isBudget && !$data->isOutOfComp && !$data->Quota1){
        //на бюджет
        $was = Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
@@ -260,6 +316,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          . '</span>';
        }
      }
+     
      if ((Personspeciality::$is_rating_order) && 
              ((!$data->isBudget && !$data->isOutOfComp && !$data->Quota1) || 
              (!$was && $data->isBudget && !$data->isOutOfComp && !$data->Quota1) )){
@@ -564,6 +621,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                         'label-success' : 'label-important';
                 $add_string = ' (в даних ЄДЕБО: '. $data->edbo->RatingPoints .')';
               }
+              $add_string .= ' | computed: '.$data->ComputedPoints;
               echo '<div style=\'width: 70px !important;float:left;\'>Разом : </div>' 
                       . '<a href=\'#\' '
                       . ' style=\'margin-left: 5px;\''

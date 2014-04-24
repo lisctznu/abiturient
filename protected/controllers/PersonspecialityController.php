@@ -31,7 +31,7 @@ class PersonspecialityController extends Controller {
   public function accessRules() {
     return array(
         array('allow', // allow all users to perform 'index' and 'view' actions
-            'actions' => array("rating"),
+            'actions' => array("rating", "excelrating"),
             'users' => array('*'),
         ),
         array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -464,6 +464,15 @@ class PersonspecialityController extends Controller {
     if (isset($reqPersonspeciality['rating_order_mode'])){
       $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
     }
+    if (isset($reqPersonspeciality['status_confirmed'])){
+      $model->status_confirmed = $reqPersonspeciality['status_confirmed'];
+    }
+    if (isset($reqPersonspeciality['status_committed'])){
+      $model->status_committed = $reqPersonspeciality['status_committed'];
+    }
+    if (isset($reqPersonspeciality['status_submitted'])){
+      $model->status_submitted = $reqPersonspeciality['status_submitted'];
+    }
     if (isset($reqPersonspeciality['mistakes_only'])){
       $model->mistakes_only = $reqPersonspeciality['mistakes_only'];
     }
@@ -479,6 +488,59 @@ class PersonspecialityController extends Controller {
     $this->render('/personspeciality/rating',array(
        'model' => $model,
        'data' => $data,
+    ));
+  }
+  
+  public function actionExcelrating(){
+    $reqPersonspeciality = Yii::app()->request->getParam('Personspeciality',null);
+    $reqFaculty = Yii::app()->request->getParam('Facultets',null);
+    $reqBenefits = Yii::app()->request->getParam('Benefit',null);
+    
+    //var_dump($_GET);exit();
+
+    $faculty = new Facultets('search');
+    $faculty->unsetAttributes();  // clear any default values
+    if ($reqFaculty){
+      $faculty->attributes = $reqFaculty;
+    }
+    $benefit = new Benefit('search');
+    $benefit->unsetAttributes();  // clear any default values
+    if ($reqBenefits){
+      $benefit->attributes = $reqBenefits;
+    }
+    
+    $model = new Personspeciality();
+    $model->searchFaculty = $faculty;
+    $model->searchBenefit = $benefit;
+    
+    if (isset($reqPersonspeciality['SPEC'])){
+      $model->SPEC = $reqPersonspeciality['SPEC'];
+    }
+    if (isset($reqPersonspeciality['rating_order_mode'])){
+      $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
+    }
+    if (isset($reqPersonspeciality['status_confirmed'])){
+      $model->status_confirmed = $reqPersonspeciality['status_confirmed'];
+    }
+    if (isset($reqPersonspeciality['status_committed'])){
+      $model->status_committed = $reqPersonspeciality['status_committed'];
+    }
+    if (isset($reqPersonspeciality['status_submitted'])){
+      $model->status_submitted = $reqPersonspeciality['status_submitted'];
+    }
+    if (isset($reqPersonspeciality['mistakes_only'])){
+      $model->mistakes_only = $reqPersonspeciality['mistakes_only'];
+    }
+    if (isset($reqPersonspeciality['edbo_mode'])){
+      $model->edbo_mode = $reqPersonspeciality['edbo_mode'];
+    }
+    if (isset($reqPersonspeciality['page_size'])){
+      $model->page_size = $reqPersonspeciality['page_size'];
+    }
+    $models = $model->search_rel(true);
+    $this->layout = '//layouts/clear';
+    $this->render('/personspeciality/excelrating',array(
+       'models' => $models,
     ));
   }
 

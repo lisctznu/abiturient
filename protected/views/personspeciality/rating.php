@@ -26,36 +26,20 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->clientScript->getCoreScrip
 <script type="text/javascript">
 $(function (){
   $('#rating-params-form').submit(function(){
-    if ($(this).attr('action') === '<?php echo Yii::app()->CreateUrl('/personspeciality/excelrating'); ?>'){
-      return true; 
+    var is_excel = ($(this).attr('action') === '<?php echo Yii::app()->CreateUrl('/personspeciality/excelrating'); ?>');
+    var spec_id = $('#hidden_spec_id').val();
+    if ($('#Personspeciality_rating_order_mode').is(':checked') && !spec_id){
+      alert('Спеціальність не обрана');
+      return false;
     }
-    if ($('#Personspeciality_rating_order_mode').is(':checked')){
-        if ($('#Personspeciality_SPEC').val() === ''){
-          alert('Введіть ключові слова спеціальності.');
-          return false;
-        }
-        $.ajax({
-            type: 'GET',
-            url: '<?php echo Yii::app()->CreateUrl("/specialities/autocomplete"); ?>',
-            data: {term: $('#Personspeciality_SPEC').val()}
-        }).done(function(data) {
-            var specs = JSON.parse(data);
-            if (specs.count > 1){
-              alert("За цими ключовими словами пройде вибірка за кількістю спеціальностей: " + 
-                      specs.count + ". Створення рейтингу неможливе.");
-              return false;
-            }
-            if (specs.count < 1){
-              alert("За цими ключовими словами не знайдено спеціальностей. Створення рейтингу неможливе.");
-              return false;
-            }
-            if (specs.count === 1){              
-              $.fn.yiiGridView.update('rating-grid', {
-                data: $('#rating-params-form').serialize()
-              });
-              return false;
-            }
-        });
+    if ($('#Personspeciality_rating_order_mode').is(':checked') && spec_id && is_excel){
+      return true;
+    }
+    if ($('#Personspeciality_rating_order_mode').is(':checked') && spec_id && !is_excel){
+      $.fn.yiiGridView.update('rating-grid', {
+        data: $('#rating-params-form').serialize()
+      });
+      return false;
     }
     if (!$('#Personspeciality_rating_order_mode').is(':checked')){
       $.fn.yiiGridView.update('rating-grid', {
@@ -67,9 +51,23 @@ $(function (){
 });
 
 $(function (){
+  $("#Personspeciality_SPEC").keydown(function (){
+    $('#hidden_spec_id').val('');
+    if ($('#Personspeciality_rating_order_mode').is(':checked')){
+        $('#RatingButton').slideUp();
+    }
+    $('#RatingExcel').slideUp();
+  });
   $("#Personspeciality_SPEC").autocomplete(
-    {delay:1000, minLength:4, "showAnim":"fold",
-      "source":"<?php echo Yii::app()->CreateUrl("/specialities/autocomplete"); ?>"});
+    {delay:1000, minLength:3, "showAnim":"fold",
+      "source":"<?php echo Yii::app()->CreateUrl("/specialities/autocomplete"); ?>",
+      "select": function(event,ui){ 
+        $('#hidden_spec_id').val(ui.item.spec_id);
+        if ($('#Personspeciality_rating_order_mode').is(':checked')){
+          $('#RatingExcel').slideDown();
+        }
+          $('#RatingButton').slideDown();
+      } });
 });
 
 $(function (){
@@ -78,10 +76,19 @@ $(function (){
       $('#Personspeciality_page_size').val('автоматично');
       $('#Personspeciality_page_size').attr('readonly',true);
       $('#statuses').slideDown();
+      if (!$('#hidden_spec_id').val()){
+        $('#RatingExcel').slideUp();
+        $('#RatingButton').slideUp();
+      } else {
+        $('#RatingButton').slideDown();
+        $('#RatingExcel').slideDown();
+      }
     } else {
       $('#Personspeciality_page_size').val('15');
       $('#Personspeciality_page_size').attr('readonly',false);
       $('#statuses').slideUp();
+      $('#RatingButton').slideDown();
+      $('#RatingExcel').slideUp();
     }
   });
 });
@@ -96,6 +103,7 @@ $(function (){
         'id' => 'rating-params-form',
     ));
     ?>
+
 <div class="well well-small row-fluid" style="width: 50%; margin: 0 auto;">
   <div class="span7">
     <span class="label label-info">нейтрально</span>
@@ -181,7 +189,10 @@ $(function (){
       ?>
 <?php
 echo $form->textField($model, 'SPEC', array(
-    'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;'
+    'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;',
+));
+echo $form->hiddenField($model, 'SepcialityID', array(
+    'id' => 'hidden_spec_id',
 ));
 ?>
     </div>
@@ -197,7 +208,8 @@ echo $form->textField($model, 'SPEC', array(
               'htmlOptions' => array(
                 'id' => 'RatingButton',
                 'class' => 'span9',
-                'onclick' => '$(\'#rating-params-form\').attr(\'action\',\''.Yii::app()->createUrl($this->route).'\');$(\'#rating-params-form\').submit();',
+                'onclick' => '$(\'#rating-params-form\').attr(\'action\',\''.Yii::app()->createUrl($this->route).'\');'
+                  . '$(\'#rating-params-form\').submit();return false;',
                ),
               'label'=>'Створити вибірку',
         )
@@ -214,7 +226,9 @@ echo $form->textField($model, 'SPEC', array(
               'htmlOptions' => array(
                 'id' => 'RatingExcel',
                 'class' => 'span9',
-                'onclick' => '$(\'#rating-params-form\').attr(\'action\',\''.Yii::app()->CreateUrl('/personspeciality/excelrating').'\');$(\'#rating-params-form\').submit();',
+                'onclick' => '$(\'#rating-params-form\').attr(\'action\',\''.Yii::app()->CreateUrl('/personspeciality/excelrating').'\');'
+                  . '$(\'#rating-params-form\').submit();return false;',
+                'style' => 'display: none;',  
                ),
               'label'=>'Сформувати Excel-файл',
               'url' => '#'
@@ -272,7 +286,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->Quota2 - $was;
          echo '<span '
          . ' title="Місце у рейтингу цільового прийому за попередньою інформацією." '
-         . ' style="color: #F89406; font-size: 11pt;">'
+         . ' style="color: #F89406; font-size: 9pt;"> '
          . $local_counter
          . '</span>';
        } else {
@@ -292,7 +306,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->Quota1 - $was;
          echo '<span '
          . ' title="Місце у рейтингу прийому поза конкурсом за попередньою інформацією." '
-         . ' style="color: #05B2D2; font-size: 11pt;">'
+         . ' style="color: #05B2D2; font-size: 9pt;"> '
          . $local_counter
          . '</span>';
        } else {
@@ -311,7 +325,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->SpecialityBudgetCount - $was;
          echo '<span '
          . ' title="Місце у рейтингу прийому за кошти держ. бюджету за попередньою інформацією." '
-         . ' style="color: green; font-size: 11pt;">'
+         . ' style="color: green; font-size: 9pt;"> '
          . $local_counter
          . '</span>';
        }
@@ -326,7 +340,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->SpecialityContractCount - $was;
          echo '<span '
          . ' title="Місце у рейтингу на контракт за попередньою інформацією." '
-         . ' style="color: brown; font-size: 11pt;">'
+         . ' style="color: brown; font-size: 9pt;"> '
          . $local_counter
          . '</span>';
        } else {
@@ -342,12 +356,31 @@ $this->widget('bootstrap.widgets.TbGridView', array(
        echo $data->edboID;
      }
      ?></a> <?php
+     
+      $doc_orig = 'Копія';
+      $is_orig = 0;
+      if (!$data->isCopyEntrantDoc){
+        $doc_orig = 'Оригінал';
+        $is_orig = 1;
+      }
+      $span_class = 'label-info';
+      if (($data->edbo)? ($data->edbo->OD == $is_orig): false){
+        $span_class = 'label-success';
+      }
+      if (($data->edbo)? ($data->edbo->OD != $is_orig): false){
+        $span_class = 'label-important';
+      }
+      echo '<span class=\'label '.$span_class.'\'>'.$doc_orig.
+              '</span><hr style=\'margin: 5px !important;\'/>';
+      
 ?> <div id='row_<?php echo $row; ?>' style='display:none; font-size:8pt;'> <?php
               echo 'id_заявки: <span class=\'label label-info\'>'.$data->idPersonSpeciality.
                       '</span><hr style=\'margin: 5px !important;\'/>';
               echo 'id_персони: <span class=\'label label-info\'>'.$data->PersonID.
                       '</span><hr style=\'margin: 5px !important;\'/>';
               echo 'id_ЄДЕБО: <span class=\'label label-info\'>'.$data->edboID.
+                      '</span><hr style=\'margin: 5px !important;\'/>';
+              echo 'статус заявки: <span class=\'label label-inverse\'>'.$data->status->PersonRequestStatusTypeName.
                       '</span><br/>';
 ?> </div> <?php
             }
@@ -404,7 +437,10 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                   echo '<div style=\'color: #BBDDBB; font-size: 8pt;\'>'.$data->edbo->PIB.'</div>';
                 }
               }
-              echo '<div style=\'color: '.$color.';\'>'.$data->NAME.'</div>';
+              echo '<A HREF=\''.Yii::app()->createUrl('/person/'.$data->PersonID).'\' '
+                      . ' TARGET="blank">'
+                      . '<div style=\'color: '.$color.';\'>'.$data->NAME.'</div>'
+                      . '</A>';
             }
                     
         ),

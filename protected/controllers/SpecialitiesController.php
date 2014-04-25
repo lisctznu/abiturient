@@ -188,37 +188,46 @@ class SpecialitiesController extends Controller
   
   public function actionAutocomplete(){
     if ( Yii::app()->request->isAjaxRequest ) {
-      $data = array();
       $reqTerm = Yii::app()->request->getParam('term',null);
-      if ($reqTerm){
-        $criteria = new CDbCriteria();
-        $criteria->with = array('eduform');
-        $criteria->together = true;
-        $criteria->select = array(
-           'idSpeciality',
-            new CDbExpression("concat_ws(' ',"
-                    . "SpecialityClasifierCode,"
-                    . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
-                    . "SpecialityDirectionName else SpecialityName end),"
-                    . "(case SpecialitySpecializationName when '' then '' "
-                    . " else concat('(',SpecialitySpecializationName,')') end)"
-                    . ",',',concat('форма: ',eduform.PersonEducationFormName)) AS tSPEC"
-            ),
-        );
-        $criteria->compare("concat_ws(' ',"
-                    . "SpecialityClasifierCode,"
-                    . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
-                    . "SpecialityDirectionName else SpecialityName end),"
-                    . "(case SpecialitySpecializationName when '' then '' "
-                    . " else concat('(',SpecialitySpecializationName,')') end)"
-                    . ",',',concat('форма: ',eduform.PersonEducationFormName))",$reqTerm,true);
-        $criteria->order = 'tSPEC ASC';
-        $data = CHtml::ListData(Specialities::model()->findAll($criteria),'idSpeciality','tSPEC');
-        $data['count'] = count($data);
-        //var_dump($data);
-        echo CJSON::encode( $data );
-        
+      if (!$reqTerm){
+        return;
       }
+      $criteria = new CDbCriteria();
+      $criteria->with = array('eduform');
+      $criteria->together = true;
+      $criteria->select = array(
+         'idSpeciality',
+          new CDbExpression("concat_ws(' ',"
+                  . "SpecialityClasifierCode,"
+                  . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
+                  . "SpecialityDirectionName else SpecialityName end),"
+                  . "(case SpecialitySpecializationName when '' then '' "
+                  . " else concat('(',SpecialitySpecializationName,')') end)"
+                  . ",',',concat('форма: ',eduform.PersonEducationFormName)) AS tSPEC"
+          ),
+      );
+      $criteria->compare("concat_ws(' ',"
+                  . "SpecialityClasifierCode,"
+                  . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
+                  . "SpecialityDirectionName else SpecialityName end),"
+                  . "(case SpecialitySpecializationName when '' then '' "
+                  . " else concat('(',SpecialitySpecializationName,')') end)"
+                  . ",',',concat('форма: ',eduform.PersonEducationFormName))",$reqTerm,true);
+      $criteria->order = 'tSPEC ASC';
+      $_data = CHtml::ListData(Specialities::model()->findAll($criteria),'idSpeciality','tSPEC');
+      $data = array();
+      $c = 0;
+      foreach ($_data as $id => $val){
+        $data[$c]['label'] = $val;
+        $data[$c]['value'] = $val;
+        $data[$c]['spec_id'] = $id;
+        
+        $c++;
+      }
+      $data['count'] = count($data);
+      //var_dump($data);
+      echo CJSON::encode( $data );
+        
     }
   }
 }

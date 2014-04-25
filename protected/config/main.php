@@ -62,9 +62,6 @@ return array(
          'layout' => "/layouts/main",
          'defaultController' => "prices",
       ),
-      "importcsv" => array(
-         'path'=>'/var/www/abiturient/protected/data/importCsv/',
-      ),
    ),
    // application components
    'components' => array(

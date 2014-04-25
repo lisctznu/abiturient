@@ -1,10 +1,22 @@
 <?php
 /* @var $models Personspeciality[] */
-
-header('Content-type: application/ms-excel');
-header('Content-Disposition: attachment; filename='.str_replace(' ', '_',$models[0]->SPEC).'.xls');
-
-
+if (!count($models)){
+  header('Location: '.Yii::app()->CreateUrl('/personspeciality/rating'));
+}
+header('Content-Type: text/html; charset=windows-1251');
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
+header('Pragma: no-cache');
+header('Content-transfer-encoding: binary');
+header('Content-Disposition: attachment; filename='.$models[0]->SepcialityID.'.xls');
+header('Content-Type: application/x-unknown');
+/*
+?>
+<head>
+  <meta charset="windows-1251">
+</head>
+<?php
+*/
 $data = array();
 $data['quota'] = array();
 $data['pzk'] = array();
@@ -20,15 +32,15 @@ $qpzk = 0;
 $u = 0;
 foreach ($models as $model){
   if (!$i){
-    $Speciality = $model->SPEC;
-    $Faculty = $model->sepciality->facultet->FacultetFullName;
+    $Speciality = iconv("utf-8", "windows-1251",$model->SPEC);
+    $Faculty = iconv("utf-8", "windows-1251",$model->sepciality->facultet->FacultetFullName);
     $_contract_counter = $model->sepciality->SpecialityContractCount;
     $_budget_counter = $model->sepciality->SpecialityBudgetCount;
     $_pzk_counter = $model->sepciality->Quota1;
     $_quota_counter = $model->sepciality->Quota2;
     Personspeciality::setCounters($_contract_counter, $_budget_counter, $_pzk_counter, $_quota_counter);
   }
-  $info_row['PIB'] = $model->NAME;
+  $info_row['PIB'] = iconv("utf-8", "windows-1251",$model->NAME);
   $info_row['Points'] = $model->ComputedPoints;
   $info_row['isPZK'] = ($model->isOutOfComp || $model->Quota1)? '+': '';
   $info_row['isExtra'] = ($model->isExtraEntry)? '+': '';
@@ -50,6 +62,7 @@ foreach ($models as $model){
         $u_max = $info_row;
       }
       $data['u'][$u++] = $info_row;
+      continue;
     }
   }
 
@@ -69,17 +82,29 @@ foreach ($models as $model){
         $u_max = $info_row;
       }
       $data['u'][$u++] = $info_row;
+      continue;
     }
   }
 
-  if ( ( (Personspeciality::$is_rating_order) && $model->isBudget && !$model->isOutOfComp && !$model->Quota1 ) || 
-          (!empty($data['u']) && !$model->isOutOfComp && !$model->Quota1 ) ){
+  if ( (Personspeciality::$is_rating_order) && (
+          ( $model->isBudget && !$model->isOutOfComp && !$model->Quota1 ) || 
+          (!empty($data['u']) && !$model->isOutOfComp && !$model->Quota1 )) ){
     //на бюджет
     while (!empty($data['u']) && ( (float)$u_max['Points'] > (float)$info_row['Points'])){
       $was = Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
       if ($was){
         $local_counter = 1 + $_budget_counter - $was - $qpzk;
         $data['budget'][$local_counter] = $u_max;
+      }
+      else {
+        $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
+        if ($was){
+          $local_counter = 1 + $_contract_counter - $was;
+          $data['contract'][$local_counter] = $u_max;
+        }
+        else {
+          break;
+        }
       }
       $p_max = 0.0;
       foreach ($data['u'] as $u_id => $d_u){
@@ -97,6 +122,7 @@ foreach ($models as $model){
     if ($was){
       $local_counter = 1 + $_budget_counter - $was - $qpzk;
       $data['budget'][$local_counter] = $info_row;
+      continue;
     }
   }
 
@@ -105,10 +131,13 @@ foreach ($models as $model){
           (!$was && $model->isBudget && !$model->isOutOfComp && !$model->Quota1) )){
     //на контракт
     while (!empty($data['u']) && ( (float)$u_max['Points'] > (float)$info_row['Points'])){
-      $was = Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
+      $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
       if ($was){
         $local_counter = 1 + $_contract_counter - $was;
         $data['contract'][$local_counter] = $u_max;
+      }
+      if (!$was){
+        break;
       }
       $p_max = 0.0;
       foreach ($data['u'] as $u_id => $d_u){
@@ -130,13 +159,9 @@ foreach ($models as $model){
   }
   $i++;
 }
-
 ?>
-<HTML>
-	<HEAD>
-		<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
-		<title>РЕЙТИНГ</title>
-		<style>
+
+    		<style>
 			TD {
 				font-size: 9pt;
 				padding: 3px;
@@ -148,20 +173,19 @@ foreach ($models as $model){
 				font-size: 16pt;
 			}
 		</style>
-	</HEAD>
-	<BODY>
 	<?php 
 	?>
 
 		<TABLE cellspacing="0" border="0" style="border-collapse:collapse;">
 			<TR>
 				<TD colspan='7' style="border:solid 0px black;">
-					Факультет: <?php echo $Faculty;?>
+					<?php echo iconv("utf-8", "windows-1251",'Факультет:'); ?> 
+          <?php echo $Faculty;?>
 				</TD>
 			</TR>
 			<TR>
 				<TD colspan='7' style="border:solid 0px black;">
-					Напрям підготовки: 
+					<?php echo iconv("utf-8", "windows-1251",'Напрям підготовки: '); ?>
 					<?php 
 					echo $Speciality;
 					?>
@@ -169,43 +193,44 @@ foreach ($models as $model){
 			</TR>
 			<TR>
 				<TD colspan='7' style="border:solid 0px black;">
-					Ліцензійний обсяг: <?php echo $_contract_counter + $_budget_counter; ?>
+					<?php echo iconv("utf-8", "windows-1251",'Ліцензійний обсяг: ');  
+          echo $_contract_counter + $_budget_counter; ?>
 				</TD>
 			</TR>
 			<TR>
 				<TD colspan='7' style="border:solid 0px black;">
-					Обсяг державного замовлення: <?php echo $_budget_counter; ?>
+					<?php echo iconv("utf-8", "windows-1251",'Обсяг державного замовлення: '); echo $_budget_counter; ?>
 				</TD>
 			</TR>
 			<TR>
 				<TD colspan='7' style="border:solid 0px black;">
-					з них квота пільговиків: 
+					<?php echo iconv("utf-8", "windows-1251",'з них квота пільговиків: '); ?>
             <?php echo $_pzk_counter; ?>
-          , квота цільовиків: 
+          <?php echo iconv("utf-8", "windows-1251",', квота цільовиків: '); ?>
             <?php echo $_quota_counter; ?>
 				</TD>
 			</TR>
 			<TR>
 				<TD>
-					№ п/п
+					<?php echo iconv("utf-8", "windows-1251",'№ п/п'); ?>
 				</TD>
 				<TD>
-					ПІБ
+					<?php echo iconv("utf-8", "windows-1251",'ПІБ'); ?>
 				</TD>
 				<TD>
-					Бал
+					<?php echo iconv("utf-8", "windows-1251",'Бал'); ?>
 				</TD>
 				<TD>
-					Поза конкурс.
+					<?php echo iconv("utf-8", "windows-1251",'Поза конкурс.'); ?>
 				</TD>
 				<TD>
-					Першочерг.
+					<?php echo iconv("utf-8", "windows-1251",'Першочерг.'); ?>
 				</TD>
 				<TD>
-					Оригінал
+					<?php echo iconv("utf-8", "windows-1251",'Оригінал'); ?>
 				</TD>
 				<TD>
-					Зарах за хвилею
+					<?php echo iconv("utf-8", "windows-1251",'Зарах за хвилею'); ?>
 				</TD>
 			</TR>
 			
@@ -213,7 +238,7 @@ foreach ($models as $model){
 			<?php if (count($data['quota']) > 0){ ?>
 			<TR>
 				<TD colspan='7'>
-					ЦІЛЬОВИЙ ПРИЙОМ 
+					<?php echo iconv("utf-8", "windows-1251",'ЦІЛЬОВИЙ ПРИЙОМ'); ?>
 				</TD>
 			</TR>
 			<?php } ?>
@@ -249,7 +274,7 @@ foreach ($models as $model){
 			<?php if (count($data['pzk']) > 0){ ?>
 			<TR>
 				<TD colspan='7'>
-					ПОЗА КОНКУРСОМ
+					<?php echo iconv("utf-8", "windows-1251",'ПОЗА КОНКУРСОМ'); ?>
 				</TD>
 			</TR>
 			<?php } ?>
@@ -285,7 +310,7 @@ foreach ($models as $model){
 			<?php if (count($data['budget']) > 0){ ?>
 			<TR>
 				<TD colspan='7'>
-					ДЕРЖ. ЗАМОВЛЕННЯ
+					<?php echo iconv("utf-8", "windows-1251",'ДЕРЖ. ЗАМОВЛЕННЯ'); ?>
 				</TD>
 			</TR>
 			<?php } ?>
@@ -320,7 +345,7 @@ foreach ($models as $model){
 			<?php if (count($data['contract']) > 0){ ?>
 			<TR>
 				<TD colspan='7'>
-					ЗА КОНТРАКТОМ
+					<?php echo iconv("utf-8", "windows-1251",'ЗА КОНТРАКТОМ'); ?>
 				</TD>
 			</TR>
 			<?php } ?>
@@ -353,8 +378,7 @@ foreach ($models as $model){
 			<?php } ?>
 			
 		</TABLE>
-	</BODY>
-</HTML>
+
 
 <?php
 	

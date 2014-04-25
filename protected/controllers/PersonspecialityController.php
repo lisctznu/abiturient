@@ -463,6 +463,9 @@ class PersonspecialityController extends Controller {
     }
     if (isset($reqPersonspeciality['rating_order_mode'])){
       $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
+      if ($model->rating_order_mode){
+        $model->SepcialityID = $reqPersonspeciality['SepcialityID'];
+      }
     }
     if (isset($reqPersonspeciality['status_confirmed'])){
       $model->status_confirmed = $reqPersonspeciality['status_confirmed'];
@@ -518,6 +521,9 @@ class PersonspecialityController extends Controller {
     }
     if (isset($reqPersonspeciality['rating_order_mode'])){
       $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
+      if ($model->rating_order_mode){
+        $model->SepcialityID = $reqPersonspeciality['SepcialityID'];
+      }
     }
     if (isset($reqPersonspeciality['status_confirmed'])){
       $model->status_confirmed = $reqPersonspeciality['status_confirmed'];

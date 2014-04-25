@@ -501,6 +501,7 @@ class Personspeciality extends ActiveRecord {
     $with_rel['sepciality.facultet'] = array('select' => false);
     $with_rel['person.docs'] = array('select' => false);
     $with_rel['person.benefits.benefit'] = array('select' => false);
+    $with_rel['status'] = array('select' => false);
     $criteria->with = $with_rel;
     
     //також йде вибірка ::
@@ -573,6 +574,8 @@ class Personspeciality extends ActiveRecord {
       $criteria->addCondition('(t.idPersonSpeciality='.$this->searchID.') '
               . 'OR (person.idPerson='.$this->searchID.') '
               . 'OR (t.edboID='.$this->searchID.')');
+    } else if ((strlen($this->searchID) > 2)){
+      $criteria->compare('status.PersonRequestStatusTypeName',$this->searchID,true);
     }
     //пошук факультету з використанням частини рядка його назви
     $criteria->compare('facultet.FacultetFullName', $this->searchFaculty->FacultetFullName,true);
@@ -600,6 +603,9 @@ class Personspeciality extends ActiveRecord {
 
       OR (edbo.Quota=0 AND t.Quota1=1)
       OR (edbo.Quota=1 AND (t.Quota1 IS NULL OR t.Quota1 = 0))
+      
+      OR (edbo.OD=1 AND t.isCopyEntrantDoc=1)
+      OR (edbo.OD=0 AND (t.isCopyEntrantDoc IS NULL OR t.isCopyEntrantDoc = 0))
    )');
     }
     
@@ -662,13 +668,7 @@ class Personspeciality extends ActiveRecord {
                 . ",',',concat('форма: ',educationForm.PersonEducationFormName)) LIKE '%".$key."%'");
       }
     } else if ($rating_order_mode){
-      $criteria->compare("concat_ws(' ',"
-                . "sepciality.SpecialityClasifierCode,"
-                . "(case substr(sepciality.SpecialityClasifierCode,1,1) when '6' then "
-                . "sepciality.SpecialityDirectionName else sepciality.SpecialityName end),"
-                . "(case sepciality.SpecialitySpecializationName when '' then '' "
-                . " else concat('(',sepciality.SpecialitySpecializationName,')') end)"
-                . ",',',concat('форма: ',educationForm.PersonEducationFormName))",$this->SPEC);
+      $criteria->compare("t.SepcialityID",$this->SepcialityID);
     }
     
     $criteria->group = "t.idPersonSpeciality";

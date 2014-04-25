@@ -91,6 +91,7 @@
                 'items'=>array(
                     array('label'=>'Головна', 'url'=>array('/site/index'), "icon"=>"icon-home"),
                     array('label'=>'Контакти', 'url'=>array('/site/contact'), "icon"=>"icon-envelope", 'visible'=>Yii::app()->user->isGuest),
+                    array('label'=>'Рейтинги', 'url'=>array('/personspeciality/rating'), "icon"=>"icon-list", 'visible'=>true),
                     array('label'=>'Довідники', 'visible'=>Yii::app()->user->checkAccess('showDirectiries'),
                          'url'=>'#', "icon"=>"icon-book", 'items'=> Directories::listMenu()),
                     array('label'=>'Звіти', 'visible'=>Yii::app()->user->checkAccess('showReports'),

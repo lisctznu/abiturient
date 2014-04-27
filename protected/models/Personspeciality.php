@@ -152,6 +152,7 @@ class Personspeciality extends ActiveRecord {
    * Віднімає один від певного лічильника і повертає старе значення.
    * Якщо лічильник дорівнює нулю або невизначений, повертає 0.
    * @param integer $counter_index
+   * @return integer
    */
   public static function decrementCounter($counter_index){
     if (isset(Personspeciality::$rating_counter[$counter_index])){
@@ -163,6 +164,14 @@ class Personspeciality extends ActiveRecord {
       }
     }
     return 0;
+  }
+  
+  /**
+   * Повертає значення лічильників для рейтингу у вигляді асиву.
+   * @return integer[]
+   */
+  public static function getCounters(){
+    return Personspeciality::$rating_counter;
   }
   
   

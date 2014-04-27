@@ -544,10 +544,178 @@ class PersonspecialityController extends Controller {
       $model->page_size = $reqPersonspeciality['page_size'];
     }
     $models = $model->search_rel(true);
-    $this->layout = '//layouts/clear';
-    $this->render('/personspeciality/excelrating',array(
-       'models' => $models,
-    ));
+    if (count($models)){
+        $_data = $this->CreateRatingData($models);
+        $this->layout = '//layouts/clear';
+        $this->render('/personspeciality/excelrating',$_data);
+    } else {
+        echo 'WOW!';
+    }
+  }
+  
+  /**
+   * Метод формує рейтингові дані для конкретної спеціальності.
+   * @param Personspeciality[] $models масив моделей, що повертає метод search_rel
+   * @return array
+   */
+  protected function CreateRatingData($models){
+        $Speciality = iconv("utf-8", "windows-1251",
+                $models[0]->SPEC);
+        $Faculty = iconv("utf-8", "windows-1251",
+                $models[0]->sepciality->facultet->FacultetFullName);
+        $_contract_counter = $models[0]->sepciality->SpecialityContractCount;
+        $_budget_counter = $models[0]->sepciality->SpecialityBudgetCount;
+        $_pzk_counter = $models[0]->sepciality->Quota1;
+        $_quota_counter = $models[0]->sepciality->Quota2;
+        Personspeciality::setCounters(
+                $_contract_counter, 
+                $_budget_counter, 
+                $_pzk_counter, 
+                $_quota_counter);
+
+        $u_max = array();
+        $info_row = array();
+
+        $i = 0;
+        $qpzk = 0;
+        $u = 0;
+        
+        $data['pzk'] = array();
+        $data['quota'] = array();
+        $data['budget'] = array();
+        $data['contract'] = array();
+        
+        foreach ($models as $model){
+          $info_row['PIB'] = iconv("utf-8", "windows-1251",$model->NAME);
+          $info_row['Points'] = $model->ComputedPoints;
+          $info_row['isPZK'] = ($model->isOutOfComp || $model->Quota1)? '+': '';
+          $info_row['isExtra'] = ($model->isExtraEntry)? '+': '';
+          $info_row['isOriginal'] = (!$model->isCopyEntrantDoc)? '+': '';
+
+          if ((Personspeciality::$is_rating_order) && $model->Quota1){
+            //цільовики
+            $was = Personspeciality::decrementCounter(Personspeciality::$C_QUOTA);    
+            if ($was){
+              Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
+              $local_counter = 1 + $_quota_counter - $was;
+              $data['quota'][$local_counter] = $info_row;
+              $qpzk++;
+            } else {
+              $info_row['isPZK'] = 'Z';
+              if ($u == 0){
+                $u_max = $info_row;
+              } else if ( (float)$u_max['Points'] < (float)$info_row['Points'] ){
+                $u_max = $info_row;
+              }
+              $data['u'][$u++] = $info_row;
+              $i++;
+              continue;
+            }
+          }
+
+          if ((Personspeciality::$is_rating_order) && $model->isOutOfComp && !$model->Quota1){
+            //поза конкурсом
+            $was = Personspeciality::decrementCounter(Personspeciality::$C_OUTOFCOMPETITION);
+            if ($was){
+              Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
+              $local_counter = 1 + $_pzk_counter - $was;
+              $data['pzk'][$local_counter] = $info_row;
+              $qpzk++;
+            } else {
+              $info_row['isPZK'] = 'Z';
+              if ($u == 0){
+                $u_max = $info_row;
+              } else if ( (float)$u_max['Points'] < (float)$info_row['Points'] ){
+                $u_max = $info_row;
+              }
+              $data['u'][$u++] = $info_row;
+              $i++;
+              continue;
+            }
+          }
+
+          if ( (Personspeciality::$is_rating_order) && (
+                  ( $model->isBudget && !$model->isOutOfComp && !$model->Quota1 ) || 
+                  (!empty($data['u']) && !$model->isOutOfComp && !$model->Quota1 )) ){
+            //на бюджет
+            while (!empty($data['u']) && ( (float)$u_max['Points'] > (float)$info_row['Points'])){
+              $was = Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
+              if ($was){
+                $local_counter = 1 + $_budget_counter - $was - $qpzk;
+                $data['budget'][$local_counter] = $u_max;
+              }
+              else {
+                $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
+                if ($was){
+                  $local_counter = 1 + $_contract_counter - $was;
+                  $data['contract'][$local_counter] = $u_max;
+                }
+                else {
+                  break;
+                }
+              }
+              $p_max = 0.0;
+              foreach ($data['u'] as $u_id => $d_u){
+                if ($d_u['PIB'] == $u_max['PIB'] && $d_u['Points'] == $u_max['Points']){
+                  unset($data['u'][$u_id]);
+                  continue;
+                }
+                if ((float)$d_u['Points'] > $p_max){
+                  $p_max = (float)$d_u['Points'];
+                  $u_max = $d_u;
+                }
+              }
+            }
+            $was = Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
+            if ($was){
+              $local_counter = 1 + $_budget_counter - $was - $qpzk;
+              $data['budget'][$local_counter] = $info_row;
+              $i++;
+              continue;
+            }
+          }
+
+          if ((Personspeciality::$is_rating_order) && 
+                  ((!$model->isBudget && !$model->isOutOfComp && !$model->Quota1) || 
+                  (!$was && $model->isBudget && !$model->isOutOfComp && !$model->Quota1) )){
+            //на контракт
+            while (!empty($data['u']) && ( (float)$u_max['Points'] > (float)$info_row['Points'])){
+              $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
+              if ($was){
+                $local_counter = 1 + $_contract_counter - $was;
+                $data['contract'][$local_counter] = $u_max;
+              }
+              if (!$was){
+                break;
+              }
+              $p_max = 0.0;
+              foreach ($data['u'] as $u_id => $d_u){
+                if ($d_u['PIB'] == $u_max['PIB'] && $d_u['Points'] == $u_max['Points']){
+                  unset($data['u'][$u_id]);
+                  continue;
+                }
+                if ((float)$d_u['Points'] > $p_max){
+                  $p_max = (float)$d_u['Points'];
+                  $u_max = $d_u;
+                }
+              }
+            }
+            $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
+            if ($was){
+              $local_counter = 1 + $_contract_counter - $was;
+              $data['contract'][$local_counter] = $info_row;
+            }
+          }
+          $i++;
+        }
+        return array('data'=>$data,
+            'Speciality'=>$Speciality,
+            'Faculty'=>$Faculty,
+            '_contract_counter'=>$_contract_counter,
+            '_budget_counter'=>$_budget_counter,
+            '_pzk_counter'=>$_pzk_counter,
+            '_quota_counter'=>$_quota_counter,
+            );
   }
 
   /**

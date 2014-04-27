@@ -567,7 +567,12 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                 }
                 if ($point['val'] > 0.0){
                   $doc_val = round($point['val'],1);
-                  $doc_val_zno = $PointMap[(string)$doc_val];
+                  if (isset($PointMap[(string)$doc_val])){
+                    $doc_val_zno = $PointMap[(string)$doc_val];
+                  }
+                  else {
+                    $doc_val_zno = $doc_val;
+                  } 
                   $doc_desc = $point['type'];
                 }
               }

@@ -47,6 +47,8 @@
  * @property integer $OD
  * @property integer $NeedHostel
  * @property string $EntranceCodes
+ * 
+ * @property file $csv_file File for uploading edbo data
  */
 class EdboData extends CActiveRecord
 {
@@ -55,6 +57,9 @@ class EdboData extends CActiveRecord
 	 * @param string $className active record class name.
 	 * @return EdboData the static model class
 	 */
+  
+  public $csv_file;
+  
 	public static function model($className=__CLASS__){
 		return parent::model($className);
 	}
@@ -82,6 +87,8 @@ class EdboData extends CActiveRecord
 			array('Direction, Speciality, Specialization, StructBranch, DetailPoints, DocType, EntranceType, EntranceReason, Language', 'length', 'max'=>128),
 			array('DocDate, EntranceCodes', 'length', 'max'=>32),
 			array('Country', 'length', 'max'=>192),
+      array('csv_file', 'file', 'types' => 'csv', 'maxSize' => 1024 * 1024 * 20, 
+          'tooLarge' => 'Перевищена межа у 20MB !', 'on' => 'upload'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, PIB, EZ, Status, Created, PersonCase, Course, EduForm, EduQualification, B, K, RatingPoints, SpecCode, Direction, SpecialCode, Speciality, Specialization, StructBranch, Changed, DetailPoints, DocType, DocSeria, DocNumber, DocPoint, DocDate, Honours, EntranceType, EntranceReason, Benefit, PriorityEntry, Quota, Language, OI, Category, Gender, Citizen, Country, TH, Tel, MobTel, OD, NeedHostel, EntranceCodes', 'safe', 'on'=>'search'),

@@ -237,6 +237,10 @@ echo $form->hiddenField($model, 'SepcialityID', array(
     ?>
     </div>
   </div>
+  <?php echo CHtml::link('Завантажити дані із ЄДЕБО --->',
+          Yii::app()->CreateUrl('/edbodata/datauploader'),array(
+              'target' => 'blank',
+          )); ?>
 </div>
 
 

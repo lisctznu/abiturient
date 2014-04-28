@@ -47,6 +47,7 @@ class PersonspecialityController extends Controller {
                 'admin', "Edboupdate",
                 'Studupdate',
                 "Create_electron",
+                "edbodata"
             ),
             'users' => array('@'),
         ),
@@ -717,7 +718,7 @@ class PersonspecialityController extends Controller {
             '_quota_counter'=>$_quota_counter,
             );
   }
-
+  
   /**
    * Performs the AJAX validation.
    * @param CModel the model to be validated

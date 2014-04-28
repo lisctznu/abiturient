@@ -281,7 +281,7 @@ class EdbodataController extends Controller
         $new_line = str_replace("\r","",trim(implode('"',$line_strs)," "));
         //numbers
         $float_replaced_line = preg_replace("/([1-9][0-9]*?),([0-9]+?)/","$1.$2",$new_line);
-        $escaped_line = str_replace("'","\'",$float_replaced_line);
+        $escaped_line = $float_replaced_line;//str_replace("'","\'",$float_replaced_line);
         $row_data = explode($fieldseparator,$escaped_line);
         $current_field_count = count($row_data);
         if ($current_field_count != $field_count) {

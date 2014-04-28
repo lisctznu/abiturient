@@ -575,6 +575,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                     $doc_val_zno = $doc_val;
                   } 
                   $doc_desc = $point['type'];
+                  break;
                 }
               }
 

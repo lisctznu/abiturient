@@ -566,8 +566,8 @@ class Personspeciality extends ActiveRecord {
       new CDbExpression('GROUP_CONCAT(benefit.idBenefit '
               . 'ORDER BY benefit.BenefitName ASC SEPARATOR \';;\') AS idBenefitList'),
       new CDbExpression('GROUP_CONCAT( IF ((docs.AtestatValue IS NULL), 0.0, docs.AtestatValue) '
-              . 'ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocValues'),
-      new CDbExpression('GROUP_CONCAT(docs.TypeID ORDER BY docs.TypeID ASC SEPARATOR \';\') AS DocTypes'),
+              . 'ORDER BY docs.AtestatValue ASC SEPARATOR \';\') AS DocValues'),
+      new CDbExpression('GROUP_CONCAT(docs.TypeID ORDER BY docs.AtestatValue ASC SEPARATOR \';\') AS DocTypes'),
       new CDbExpression('if(sum(benefit.isPZK)>0,1,0) AS isOutOfComp'),
       new CDbExpression('if(sum(benefit.isPV)>0,1,0) AS isExtraEntry'),
       new CDbExpression('GROUP_CONCAT(benefit.isPZK '

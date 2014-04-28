@@ -206,13 +206,16 @@ class SpecialitiesController extends Controller
                   . ",',',concat('форма: ',eduform.PersonEducationFormName)) AS tSPEC"
           ),
       );
-      $criteria->compare("concat_ws(' ',"
-                  . "SpecialityClasifierCode,"
-                  . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
-                  . "SpecialityDirectionName else SpecialityName end),"
-                  . "(case SpecialitySpecializationName when '' then '' "
-                  . " else concat('(',SpecialitySpecializationName,')') end)"
-                  . ",',',concat('форма: ',eduform.PersonEducationFormName))",$reqTerm,true);
+      $terms = explode(' ',$reqTerm);
+      foreach ($terms as $term){
+        $criteria->compare("concat_ws(' ',"
+                    . "SpecialityClasifierCode,"
+                    . "(case substr(SpecialityClasifierCode,1,1) when '6' then "
+                    . "SpecialityDirectionName else SpecialityName end),"
+                    . "(case SpecialitySpecializationName when '' then '' "
+                    . " else concat('(',SpecialitySpecializationName,')') end)"
+                    . ",',',concat('форма: ',eduform.PersonEducationFormName))",$term,true);
+      }
       $criteria->order = 'tSPEC ASC';
       $_data = CHtml::ListData(Specialities::model()->findAll($criteria),'idSpeciality','tSPEC');
       $data = array();

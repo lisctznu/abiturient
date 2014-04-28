@@ -67,7 +67,7 @@ class PhotoloaderController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Personsextypes;
+		$model=new PersonSexTypes;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -163,7 +163,7 @@ class PhotoloaderController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new Personsextypes('search');
+		$model=new PersonSexTypes('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['PersonSexTypes']))
 			$model->attributes=$_GET['PersonSexTypes'];

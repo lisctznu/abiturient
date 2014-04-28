@@ -536,7 +536,7 @@ class Personspeciality extends ActiveRecord {
               . " else concat('(',sepciality.SpecialitySpecializationName,')') end)"
               . ",',',concat('форма: ',educationForm.PersonEducationFormName)) AS SPEC"),
       new CDbExpression('(ROUND((
-        IF (
+        MAX(IF (
           ISNULL( 
             (
               SELECT ROUND(MAX(Znovalue),2)
@@ -550,7 +550,7 @@ class Personspeciality extends ActiveRecord {
             FROM atestatvalue 
             WHERE ROUND(Atestatvalue,1) IN (ROUND(docs.AtestatValue,1)) 
           ) 
-        )+
+        ))+
         IF(ISNULL(documentSubject1.SubjectValue),0.0,documentSubject1.SubjectValue)+
         IF(ISNULL(documentSubject2.SubjectValue),0.0,documentSubject2.SubjectValue)+
         IF(ISNULL(documentSubject3.SubjectValue),0.0,documentSubject3.SubjectValue)+
@@ -597,7 +597,9 @@ class Personspeciality extends ActiveRecord {
       //  щоб відмітка позаконкурсного вступу не співпадала
       //  щоб відмітка вступу за цільовим направленням не співпадала
       $criteria->addCondition('(
-      (edbo.DocPoint NOT IN ((SELECT documents.AtestatValue FROM documents WHERE documents.PersonID = t.PersonID 
+      (concat_ws(\' \',trim(person.LastName),trim(person.FirstName),person.MiddleName) NOT LIKE edbo.PIB)
+      
+      OR (edbo.DocPoint NOT IN ((SELECT documents.AtestatValue FROM documents WHERE documents.PersonID = t.PersonID 
         AND documents.AtestatValue IS NOT NULL))) 
 
       OR (edbo.PriorityEntry <> IF(((SELECT MAX(b.isPV) FROM personbenefits pb LEFT JOIN benefit b ON pb.BenefitID = b.idBenefit 

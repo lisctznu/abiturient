@@ -434,7 +434,8 @@ $this->widget('bootstrap.widgets.TbGridView', array(
               if ($data->edbo){
                 $color = ($data->NAME == $data->edbo->PIB) ? 'green' : 'red';
                 if ($data->NAME != $data->edbo->PIB){
-                  echo '<div style=\'color: #BBDDBB; font-size: 8pt;\'>'.$data->edbo->PIB.'</div>';
+                  echo '<div style=\'color: #BBDDBB; font-size: 8pt;\''
+                  . ' title=\'Такі дані в ЄДЕБО.\'>'.$data->edbo->PIB.'</div>';
                 }
               }
               echo '<A HREF=\''.Yii::app()->createUrl('/person/'.$data->PersonID).'\' '

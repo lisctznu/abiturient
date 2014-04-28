@@ -110,7 +110,10 @@
                            )
                         ),
                     array('label'=>'Авторизуватися', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest, 'icon'=>"icon-user"),
-                    array('label'=>'Вийти з системи ('.Yii::app()->user->name.(empty($pkname)? "":"/".$pkname).')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest, 'icon'=>"icon-user")
+                    array('label'=>'Вийти з системи ('.Yii::app()->user->name.
+                            ((empty($pkname) || Yii::app()->user->checkAccess('showDirectiries'))? 
+                            "":"/".$pkname).')', 'url'=>array('/site/logout'), 
+                            'visible'=>!Yii::app()->user->isGuest, 'icon'=>"icon-user")
                 ),
                 
             ),

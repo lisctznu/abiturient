@@ -20,12 +20,16 @@
     ?>
     <TABLE 
       style="border-collapse: collapse;font-size: 8pt;font-family: Tahoma; display: none;" 
-      border=1
+      border=4
       cellspacing="0"
       id="edbo_info_table">
       <TR><TD colspan=4 style="text-align: center; font-size: 10pt;">Зараз таблиця даних ЄДЕБО має таку 
           <span style="color: red;">регулярну</span> структуру</TD></TR>
-      <TR><TH>#</TH><TH>Стовпець</TH><TH>Назва в базі даних</TH><TH>Тип</TH></TR>
+      <TR><TH style="border: 3px solid black;">#</TH>
+        <TH style="border: 3px solid black;">Стовпець</TH>
+        <TH style="border: 3px solid black;">Назва в базі даних</TH>
+        <TH style="border: 3px solid black;">Тип</TH>
+      </TR>
       <?php
       $i = 0;
       foreach ($data_items as $data_item) {
@@ -41,16 +45,23 @@
         if (strstr($data_item['Type'], 'varchar') !== FALSE) {
           $type = 'Рядок символів';
         }
-        echo '<TR><TD>' . ( ++$i) . '</TD>';
-        echo '<TD style=\'padding: 0px; padding-left: 10px;font-family: Verdana; font-size: 11pt;\'><I><B>' . $field . '</B></I></TD>'
-        . '<TD style=\'padding: 0px; padding-left: 10px;\'>' . $db_name . '</TD>'
-        . '<TD style=\'padding: 0px; padding-left: 10px;\'>' . $type . '</TD>';
+        $bgcolor = 'white';
+        if (!($i % 2)){
+          $bgcolor = '#CCDDCC';
+        }
+        echo '<TR style=\'background-color: '.$bgcolor.'\'>'
+                . '<TD style=\' border: 3px solid black;\'>' . ( ++$i) . '</TD>';
+        echo '<TD style=\'padding: 0px; padding-left: 10px;'
+        . 'font-family: Verdana; font-size: 11pt; border: 3px solid black;\'><I><B>' . $field . '</B></I></TD>'
+        . '<TD style=\'padding: 0px; padding-left: 10px; border: 3px solid black;\'>' . $db_name . '</TD>'
+        . '<TD style=\'padding: 0px; padding-left: 10px; border: 3px solid black;\'>' . $type . '</TD>';
         echo '</TR>';
       }
       ?>
     </TABLE>
   </div>
   <div class="span5">
+    Завантаження CSV-файлу з даними ЄДЕБО.
     <?php
       $this->widget('bootstrap.widgets.TbFileUpload', array(
               'url' => $this->createUrl('/edbodata/upload'),

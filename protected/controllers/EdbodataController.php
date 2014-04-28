@@ -28,7 +28,8 @@ class EdbodataController extends Controller
   public function accessRules(){
     return array(
       array('allow', // allow users with admin privileges to perform all CRUD actions
-        'actions' => array('view', 'create', 'update', 'admin', 'delete', 'datauploader', 'upload', 'deletecsv'),
+        'actions' => array('view', 'create', 'update', 'admin', 'delete', 
+           'datauploader', 'upload', 'deletecsv', 'csvtodb'),
         'users' => array('@'),
       ),
       array('deny', // deny all users
@@ -150,7 +151,7 @@ class EdbodataController extends Controller
       $data_items = $command->queryAll(); // execute a query SQL
       $this->render('/edbodata/datauploader',array(
          'data_items' => $data_items,
-         'model' => new Edbodata(),
+         'model' => new EdboData(),
          'rowCount' => $rowCount,
       ));
   }
@@ -179,98 +180,17 @@ class EdbodataController extends Controller
       }
       $file = $new_filename;
       
-      $hfile = fopen($file,"r");
-      if (!$hfile){
-        $data[] = array('error', $file . ' не відкривається.');
-        echo json_encode($data);
-        return ;
+      $list = $this->actionCsvtodb($file);
+      if (!isset($list[0]) || $list[0]===false){
+        $inserted = 'error';
+        if (isset($list[1])){
+          $uploaded = $list[1];
+        }
+      } else {
+        $inserted = $list[0]." ";
+        $updated = $list[1]." ";
+        $uploaded = "Втавлено : ". $inserted . ", оновлено : " . $updated . ' із ' . $list[2];
       }
-      
-      $fsize = filesize($file);
-
-      $csvcontent = fread($hfile,$fsize);
-      if (!$csvcontent){
-        $data[] = array('error', $file . ' не читається.');
-        echo json_encode($data);
-        exit() ;
-      }
-      
-      fclose($hfile);
-      
-      $inserted = 0;
-      $updated = 0;
-      $SQL="SHOW FULL COLUMNS FROM edbo_data";
-      $connection = Yii::app()->db; 
-      $command = $connection->createCommand($SQL);
-      $rowCount = $command->execute(); // execute the non-query SQL
-      $row_header = $command->queryAll(); // execute a query SQL
-      
-      $field_count = $rowCount;
-      $fieldseparator = ";";
-      $lineseparator = "\n";
-      
-      $arr_lines = explode($lineseparator,$csvcontent);
-      foreach($arr_lines as $line) {
-        $edbo_model = new EdboData();
-        $line_utf8 = iconv('windows-1251','utf-8',$line);
-        $line_strs = explode('"',$line_utf8);
-        for($k = 0; $k < count($line_strs); $k++) {
-          if ($k % 2){
-            $line_strs[$k] = str_replace($fieldseparator,"__SEPARATOR__",$line_strs[$k]);
-          }
-        }
-        $new_line = str_replace("\r","",trim(implode('"',$line_strs)," "));
-        //phones
-        $float_replaced_line = preg_replace("/([1-9][0-9]*?),([0-9]+?)/","$1.$2",$new_line);
-        $escaped_line = str_replace("'","\'",$float_replaced_line);
-        $row_data = explode($fieldseparator,$escaped_line);
-        $current_field_count = count($row_data);
-        if ($current_field_count != $field_count) {
-          $data[] = array('error', $current_field_count .'!=' . $field_count);
-          echo json_encode($data);
-          exit() ;
-        }
-        $edbo_attributes = array();
-        for ($k = 0; $k < $current_field_count; $k++){
-          $data_item = str_replace("__SEPARATOR__",$fieldseparator,$row_data[$k]);
-          if (!isset($row_header[$k]['Field'])){
-            $data[] = array('error', $k .' - не індекс назви поля таблиці БД');
-            echo json_encode($data);
-            exit() ;
-          }
-          $edbo_attributes[$row_header[$k]['Field']] = $data_item;
-        }
-
-        $edbo_old_model = EdboData::model()->findByPk($row_data[0]);
-        $is_new = false;
-        $is_update = false;
-        if (!$edbo_old_model){
-          $is_new = true;
-        }
-        for ($k = 0; ($k < $current_field_count && $edbo_old_model); $k++){
-          $old_param = $edbo_old_model->getAttribute($row_header[$k]['Field']);
-          $new_param = $edbo_attributes[$row_header[$k]['Field']];
-          if ($old_param != $new_param){
-            $is_update = true;
-            break;
-          }
-        }
-        
-        if ($is_new){
-          $inserted++;
-          $edbo_model->attributes = $edbo_attributes;
-          $edbo_model->save();
-          continue;
-        }
-        if ($is_update){
-          $updated++;
-          $edbo_old_model->attributes = $edbo_attributes;
-          $edbo_old_model->save();
-        }
-      }
-      
-      $uploaded = "Втавлено : ". $inserted . " , оновлено : " . $updated;
-
         $data[] = array(
             'name' => $model->csv_file->name,
             'type' => $model->csv_file->type,
@@ -307,5 +227,132 @@ class EdbodataController extends Controller
       }
     }
   }
+  
+  public function actionCsvtodb($file){
+      if (!$file){
+        $file = Yii::app()->request->getParam('file',null);
+      }
+      if (!$file) {
+        return array(false,'no file');
+      }
+      $hfile = fopen($file,"r");
+      if (!$hfile){
+        return array(false,'can not open');
+      }
+      
+      $fsize = filesize($file);
+
+      $csvcontent = fread($hfile,$fsize);
+      if (!$csvcontent){
+        return array(false,'not readable');
+      }
+      
+      fclose($hfile);
+      
+      $inserted = 0;
+      $updated = 0;
+      $SQL="SHOW FULL COLUMNS FROM edbo_data";
+      $connection = Yii::app()->db; 
+      $command = $connection->createCommand($SQL);
+      $rowCount = $command->execute(); // execute the non-query SQL
+      $row_header = $command->queryAll(); // execute a query SQL
+      
+      $field_count = $rowCount;
+      $fieldseparator = ";";
+      $lineseparator = "\n";
+      
+      $arr_lines = explode($lineseparator,$csvcontent);
+      $id = 0;
+      foreach($arr_lines as $line) {
+        $id++;
+        if (trim($line," \t\n\r") == ""){
+          continue;
+        }
+        $edbo_model = new EdboData();
+        $line_utf8 = iconv('windows-1251','utf-8',$line);
+        $line_utf8_quatro_quots = str_replace('""""','"__quots__"',$line_utf8);
+        $line_utf8_double_quots = str_replace('""','__quots__',$line_utf8_quatro_quots);
+        $line_strs = explode('"',$line_utf8_double_quots);
+        for($k = 0; $k < count($line_strs); $k++) {
+          if ($k % 2){
+            $line_strs[$k] = str_replace($fieldseparator,"__SEPARATOR__",$line_strs[$k]);
+          }
+        }
+        $new_line = str_replace("\r","",trim(implode('"',$line_strs)," "));
+        //numbers
+        $float_replaced_line = preg_replace("/([1-9][0-9]*?),([0-9]+?)/","$1.$2",$new_line);
+        $escaped_line = str_replace("'","\'",$float_replaced_line);
+        $row_data = explode($fieldseparator,$escaped_line);
+        $current_field_count = count($row_data);
+        if ($current_field_count != $field_count) {
+          return array(false,'К-сть полів не співпадає : '.$current_field_count.' != '.$field_count);
+        }
+        $edbo_attributes = array();
+        for ($k = 0; $k < $current_field_count; $k++){
+          $data_item_0 = str_replace("__SEPARATOR__",$fieldseparator,$row_data[$k]);
+          $data_item_1 = str_replace("\"",'',$data_item_0);
+          $data_item = str_replace("__quots__",'"',$data_item_1);
+          
+          if (!isset($row_header[$k]['Field'])){
+            return array(false,'row_header with index '.$k.' doesn\'t exist');
+          }
+          if (strstr($row_header[$k]['Type'],'float')!==false){
+            $data_item = (float)$data_item;
+          }
+          $len[1] = 0;
+          preg_match('/\(([0-9]+)\)/', $row_header[$k]['Type'], $len);
+          if (isset($len[1]) && mb_strlen($data_item,'utf8') > $len[1] && is_string($data_item)){
+            $data_item = mb_substr($data_item,0,$len[1],'utf8');
+          }
+          $edbo_attributes[$row_header[$k]['Field']] = $data_item;
+          
+        }
+        
+        if (!is_numeric($edbo_attributes['ID'])){
+          continue;
+        }
+
+        $edbo_old_model = EdboData::model()->findByPk($row_data[0]);
+        $is_new = false;
+        $is_update = false;
+        if (!$edbo_old_model){
+          $is_new = true;
+        }
+        for ($k = 0; ($k < $current_field_count && $edbo_old_model); $k++){
+          $old_param = $edbo_old_model->getAttribute($row_header[$k]['Field']);
+          $new_param = $edbo_attributes[$row_header[$k]['Field']];
+          if (strstr($row_header[$k]['Type'],'float')!==false){
+            $old_param = (float)$old_param;
+            $new_param = (float)$new_param;
+          }
+
+          if ($old_param != $new_param){
+            $is_update = true;
+            break;
+          }
+        }
+        
+        if ($is_new){
+          $inserted++;
+          $edbo_model->attributes = $edbo_attributes;
+          $res  = $edbo_model->save();
+          if (!$res){
+            return array(false,'error (Row:'.$id.') '.serialize($edbo_old_model->errors));
+          }          
+          continue;
+        }
+        if ($is_update){
+          $updated++;
+          $edbo_old_model->attributes = $edbo_attributes;
+          $res=$edbo_old_model->save();
+          if (!$res){
+            return array(false,'error (Row:'.$id.') '.serialize($edbo_old_model->errors));
+          }
+        }
+      }
+      return array($inserted,$updated,$id);
+  }
+  
+  
 
 }

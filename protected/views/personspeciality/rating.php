@@ -7,6 +7,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->clientScript->getCoreScrip
 
 ?>
 <style>
+@font-face {
+    font-family: Oreos;
+    src: url("../css/oreos.ttf") format('truetype');
+    font-weight:100;
+}
+  
   .ui-autocomplete {
     max-height: 200px;
     width: 400px;
@@ -277,7 +283,7 @@ echo $form->hiddenField($model, 'SepcialityID', array(
               'buttonType'=>'submit',
               'type'=>'primary',
               "size"=>"small",
-              "icon" => "eye-open",
+              "icon" => "eye-open white",
               'htmlOptions' => array(
                 'id' => 'RatingButton',
                 'class' => 'span9',
@@ -295,7 +301,7 @@ echo $form->hiddenField($model, 'SepcialityID', array(
               'buttonType'=>'link',
               'type'=>'primary',
               "size"=>"small",
-              "icon"=>"file",
+              "icon"=>"file white",
               'htmlOptions' => array(
                 'id' => 'RatingExcel',
                 'class' => 'span9',
@@ -329,10 +335,10 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             //'name' => 'searchID',
             'filter' => false,
             'htmlOptions' => array(
-                'style' => 'width: 50px;'
+                'style' => 'width: 80px;'
             ),
             'headerHtmlOptions' => array(
-                'style' => 'width: 50px;'
+                'style' => 'width: 80px;'
             ),
             'value' => function($data,$row){
               /* @var $data Personspeciality */
@@ -357,7 +363,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->Quota2 - $was;
          echo '<span '
          . ' title="Місце у рейтингу цільового прийому за попередньою інформацією." '
-         . ' style="color: #F89406; font-size: 9pt;"> '
+         . ' style="color: #F89406; font-size: 12pt; font-family: Oreos;"> '
          . $local_counter
          . '</span>';
        } else {
@@ -377,7 +383,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->Quota1 - $was;
          echo '<span '
          . ' title="Місце у рейтингу прийому поза конкурсом за попередньою інформацією." '
-         . ' style="color: #05B2D2; font-size: 9pt;"> '
+         . ' style="color: #05B2D2; font-size: 12pt; font-family: Oreos;"> '
          . $local_counter
          . '</span>';
        } else {
@@ -396,7 +402,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->SpecialityBudgetCount - $was;
          echo '<span '
          . ' title="Місце у рейтингу прийому за кошти держ. бюджету за попередньою інформацією." '
-         . ' style="color: green; font-size: 9pt;"> '
+         . ' style="color: lightgreen; font-size: 12pt; font-family: Oreos;"> '
          . $local_counter
          . '</span>';
        }
@@ -411,7 +417,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
          $local_counter = 1 + $data->sepciality->SpecialityContractCount - $was;
          echo '<span '
          . ' title="Місце у рейтингу на контракт за попередньою інформацією." '
-         . ' style="color: brown; font-size: 9pt;"> '
+         . ' style="color: #ad6704; font-size: 12pt; font-family: Oreos;"> '
          . $local_counter
          . '</span>';
        } else {

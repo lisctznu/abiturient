@@ -10,7 +10,7 @@
         'buttonType' => 'link',
         'type' => 'primary',
         'size' => 'small',
-        'icon' => 'info-sign',
+        'icon' => 'info-sign white',
         'label' => 'Регулярна структура таблиці ЄДЕБО',
         'htmlOptions' => array(
             'onclick' => '$("#edbo_info_table").toggle();return false;'

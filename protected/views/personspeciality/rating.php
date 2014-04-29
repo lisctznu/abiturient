@@ -103,6 +103,10 @@ $(function (){
         'id' => 'rating-params-form',
     ));
     ?>
+  <?php echo CHtml::link('Завантажити дані із ЄДЕБО --->',
+          Yii::app()->CreateUrl('/edbodata/datauploader'),array(
+              'target' => 'blank', 'style' => 'float: right;'
+          )); ?>
 
 <div class="well well-small row-fluid" style="width: 50%; margin: 0 auto;">
   <div class="span7">
@@ -197,6 +201,75 @@ echo $form->hiddenField($model, 'SepcialityID', array(
 ?>
     </div>
   </div>
+  
+  <div class="span12">
+    <center>
+      <?php echo CHtml::link('інші параметри','#',
+              array('onclick'=>'$("#another_parameters").slideToggle();return false;')); ?>
+    </center>
+    
+  </div>
+  <div class='row-fluid' style='display: none;' id='another_parameters'>
+  <div class='span12'></div>
+  <div class="span12">
+    <div class="span6">
+      <?php
+      echo $form->label($model, 'searchID', array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+      ));
+      ?>
+      <?php
+      echo $form->textField($model, 'searchID', array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;'
+      ));
+      ?>
+    </div>
+
+    <div class="span6">
+      <?php
+      echo CHtml::label('Пошук по частині назви факультету', 
+              CHtml::activeId($model->searchFaculty, 'FacultetFullName'), array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+      ));
+      ?>
+      <?php
+      echo $form->textField($model->searchFaculty, 'FacultetFullName', array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;',
+      ));
+      ?>
+    </div>
+  </div>
+    <!-- ----- -->
+  <div class='span12'>  
+    <div class="span6">
+      <?php
+      echo $form->label($model, 'NAME', array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+      ));
+      ?>
+      <?php
+      echo $form->textField($model, 'NAME', array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;'
+      ));
+      ?>
+    </div>
+
+    <div class="span6">
+      <?php
+      echo CHtml::label('Пошук по частині назви пільги або їх число', 
+              CHtml::activeId($model->searchBenefit, 'BenefitName'), array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+      ));
+      ?>
+      <?php
+      echo $form->textField($model->searchBenefit, 'BenefitName', array(
+          'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;',
+      ));
+      ?>
+    </div>
+  </div>
+  </div>
+  
   <div class="span12">
     <div class="span6">
     <?php
@@ -237,10 +310,6 @@ echo $form->hiddenField($model, 'SepcialityID', array(
     ?>
     </div>
   </div>
-  <?php echo CHtml::link('Завантажити дані із ЄДЕБО --->',
-          Yii::app()->CreateUrl('/edbodata/datauploader'),array(
-              'target' => 'blank',
-          )); ?>
 </div>
 
 
@@ -258,9 +327,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'header' => 'ID',
             //'name' => 'searchID',
-            'filter' => CHtml::activeTextField($model, 'searchID', array(
-                'style' => 'font-size: 7pt; font-family: Tahoma; height: 12px; width: 40px;'
-            )),
+            'filter' => false,
             'htmlOptions' => array(
                 'style' => 'width: 50px;'
             ),
@@ -392,9 +459,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
 
         array(
             'name' => 'facultet.FacultetFullName',
-            'filter' => CHtml::activeTextField($model->searchFaculty, 'FacultetFullName', array(
-                'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px; width: 75px;'
-            )),
+            'filter' => false,
             'header' => 'Факультет',
             'htmlOptions' => array(
                 'style' => 'width: 90px;'
@@ -408,9 +473,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'name' => 'SPEC',
             'header' => 'Спеціальність',
-            'filter' => CHtml::activeTextField($model, 'SPEC', array(
-                'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px; width: 140px;'
-            )),
+            'filter' => false,
             'htmlOptions' => array(
                 'style' => 'width: 150px;'
             ),
@@ -422,10 +485,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'name' => 'NAME',
             'header' => 'ПІБ',
-            'filter' => CHtml::activeTextField($model, 'NAME', array(
-                'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;'
-              )
-            ),      
+            'filter' => false,      
             'htmlOptions' => array(
                 'style' => 'font-size: 10pt;'
             ),
@@ -453,9 +513,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'header' => 'Пільги',
             'name' => 'benefit.BenefitName',
-            'filter' => CHtml::activeTextField($model->searchBenefit, 'BenefitName', array(
-                'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px; width: 120px;'
-            )),
+            'filter' => false,
             'htmlOptions' => array(
                 'style' => 'width: 130px;'
             ),

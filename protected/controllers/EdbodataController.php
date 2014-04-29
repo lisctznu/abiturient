@@ -189,7 +189,7 @@ class EdbodataController extends Controller
       } else {
         $inserted = $list[0]." ";
         $updated = $list[1]." ";
-        $uploaded = "Втавлено : ". $inserted . ", оновлено : " . $updated . ' із ' . $list[2];
+        $uploaded = " ( Втавлено : ". $inserted . ", оновлено : " . $updated . ') із ' . $list[2];
       }
         $data[] = array(
             'name' => $model->csv_file->name,

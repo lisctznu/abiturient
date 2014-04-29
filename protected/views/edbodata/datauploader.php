@@ -19,16 +19,17 @@
     ));
     ?>
     <TABLE 
-      style="border-collapse: collapse;font-size: 8pt;font-family: Tahoma; display: none;" 
+      class='detail-view table table-bordered table-condensed table-striped'
+      style="display: none; font-size: 8pt;" 
       border=4
       cellspacing="0"
       id="edbo_info_table">
       <TR><TD colspan=4 style="text-align: center; font-size: 10pt;">Зараз таблиця даних ЄДЕБО має таку 
           <span style="color: red;">регулярну</span> структуру</TD></TR>
-      <TR><TH style="border: 3px solid black;">#</TH>
-        <TH style="border: 3px solid black;">Стовпець</TH>
-        <TH style="border: 3px solid black;">Назва в базі даних</TH>
-        <TH style="border: 3px solid black;">Тип</TH>
+      <TR><TH style='width: 5%;'>#</TH>
+        <TH>Стовпець</TH>
+        <TH style='width: 20%;'>Назва в базі даних</TH>
+        <TH style='width: 30%;'>Тип</TH>
       </TR>
       <?php
       $i = 0;
@@ -45,16 +46,15 @@
         if (strstr($data_item['Type'], 'varchar') !== FALSE) {
           $type = 'Рядок символів';
         }
-        $bgcolor = 'white';
+        $class = 'odd';
         if (!($i % 2)){
-          $bgcolor = '#CCDDCC';
+          $class = 'even';
         }
-        echo '<TR style=\'background-color: '.$bgcolor.'\'>'
-                . '<TD style=\' border: 3px solid black;\'>' . ( ++$i) . '</TD>';
-        echo '<TD style=\'padding: 0px; padding-left: 10px;'
-        . 'font-family: Verdana; font-size: 11pt; border: 3px solid black;\'><I><B>' . $field . '</B></I></TD>'
-        . '<TD style=\'padding: 0px; padding-left: 10px; border: 3px solid black;\'>' . $db_name . '</TD>'
-        . '<TD style=\'padding: 0px; padding-left: 10px; border: 3px solid black;\'>' . $type . '</TD>';
+        echo '<TR class=\''.$class.'\'>'
+                . '<TD >' . ( ++$i) . '</TD>';
+        echo '<TD ><I>' . $field . '</I></TD>'
+        . '<TD >' . $db_name . '</TD>'
+        . '<TD >' . $type . '</TD>';
         echo '</TR>';
       }
       ?>

@@ -24,9 +24,9 @@ DROP TABLE IF EXISTS `academicyears`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `academicyears` (
   `idAcademicYear` int(11) NOT NULL AUTO_INCREMENT,
-  `AcademicYearName` varchar(40) NOT NULL,
+  `AcademicYearName` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idAcademicYear`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Навчальні роки (для договорів)';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Навчальні роки (для договорів)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -114,9 +114,9 @@ DROP TABLE IF EXISTS `all_dates`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `all_dates` (
-  `cdate` varchar(255) NOT NULL,
+  `cdate` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`cdate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,7 +145,7 @@ CREATE TABLE `atestatvalue` (
   `AtestatValue` float NOT NULL,
   `ZnoValue` float NOT NULL,
   PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,8 +157,8 @@ DROP TABLE IF EXISTS `benefit`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `benefit` (
   `idBenefit` int(11) NOT NULL,
-  `BenefitName` varchar(250) DEFAULT NULL,
-  `BenefitKey` char(30) DEFAULT NULL,
+  `BenefitName` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `BenefitKey` char(30) COLLATE utf8_unicode_ci DEFAULT NULL,
   `BenefitGroupID` int(11) DEFAULT NULL,
   `isPZK` tinyint(4) NOT NULL,
   `isPV` tinyint(4) NOT NULL,
@@ -166,7 +166,7 @@ CREATE TABLE `benefit` (
   PRIMARY KEY (`idBenefit`),
   KEY `fk_Benefit_1` (`BenefitGroupID`),
   CONSTRAINT `fk_Benefit_1` FOREIGN KEY (`BenefitGroupID`) REFERENCES `benefitsgroups` (`idBenefitsGroups`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -194,9 +194,9 @@ DROP TABLE IF EXISTS `benefitsgroups`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `benefitsgroups` (
   `idBenefitsGroups` int(11) NOT NULL,
-  `BenefitsGroupsName` varchar(250) DEFAULT NULL,
+  `BenefitsGroupsName` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idBenefitsGroups`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,10 +208,10 @@ DROP TABLE IF EXISTS `causality`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `causality` (
   `idCausality` int(11) NOT NULL,
-  `CausalityName` varchar(150) DEFAULT NULL,
-  `CausalityDescription` varchar(200) DEFAULT NULL,
+  `CausalityName` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CausalityDescription` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idCausality`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='ExaminationCauses в ЄДЕБО';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='ExaminationCauses в ЄДЕБО';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,7 +226,7 @@ CREATE TABLE `cnt_bachelor_graduated_2013` (
   `cnt` int(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`FacultetID`),
   CONSTRAINT `fk_bachelor_graduated_2013` FOREIGN KEY (`FacultetID`) REFERENCES `facultets` (`idFacultet`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Количество выпускников бакалавров 2013 г.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Количество выпускников бакалавров 2013 г.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -578,16 +578,16 @@ DROP TABLE IF EXISTS `contracts`;
 CREATE TABLE `contracts` (
   `idContract` int(11) NOT NULL AUTO_INCREMENT,
   `PersonSpecialityID` int(11) NOT NULL,
-  `ContractNumber` varchar(100) DEFAULT NULL,
+  `ContractNumber` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ContractDate` date DEFAULT NULL,
-  `CustomerName` text,
-  `CustomerDoc` text,
-  `CustomerAddress` text,
-  `CustomerPaymentDetails` text,
+  `CustomerName` text COLLATE utf8_unicode_ci,
+  `CustomerDoc` text COLLATE utf8_unicode_ci,
+  `CustomerAddress` text COLLATE utf8_unicode_ci,
+  `CustomerPaymentDetails` text COLLATE utf8_unicode_ci,
   `PaymentDate` date DEFAULT NULL,
-  `Comment` text,
+  `Comment` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`idContract`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2533 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -599,9 +599,9 @@ DROP TABLE IF EXISTS `contracts_type`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `contracts_type` (
   `idcontracts_type` int(100) NOT NULL AUTO_INCREMENT,
-  `ContractsTypeName` varchar(100) NOT NULL,
+  `ContractsTypeName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idcontracts_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='i am cancer';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='i am cancer';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -613,11 +613,11 @@ DROP TABLE IF EXISTS `country`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `country` (
   `idCountry` int(11) NOT NULL AUTO_INCREMENT,
-  `CountryName` varchar(255) NOT NULL,
-  `iso` varchar(10) NOT NULL,
+  `CountryName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `iso` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `Visible` int(11) NOT NULL,
   PRIMARY KEY (`idCountry`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=861 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -629,10 +629,10 @@ DROP TABLE IF EXISTS `coursedp`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `coursedp` (
   `idCourseDP` int(11) NOT NULL,
-  `CourseDPName` varchar(100) NOT NULL,
-  `guid` char(45) DEFAULT NULL COMMENT 'GUID курсов в ЕДБО',
+  `CourseDPName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `guid` char(45) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'GUID курсов в ЕДБО',
   PRIMARY KEY (`idCourseDP`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -644,9 +644,9 @@ DROP TABLE IF EXISTS `courses`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `courses` (
   `idCourse` int(11) NOT NULL,
-  `CourseName` char(10) DEFAULT NULL,
+  `CourseName` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idCourse`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -658,13 +658,13 @@ DROP TABLE IF EXISTS `directories`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `directories` (
   `idDirecrtory` int(11) NOT NULL AUTO_INCREMENT,
-  `DirectoryName` varchar(255) NOT NULL,
-  `DirectoryInfo` text NOT NULL,
-  `DirectoryLink` varchar(255) NOT NULL,
+  `DirectoryName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `DirectoryInfo` text COLLATE utf8_unicode_ci NOT NULL,
+  `DirectoryLink` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `Visible` tinyint(4) NOT NULL,
   `Access` int(11) NOT NULL,
   PRIMARY KEY (`idDirecrtory`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -696,12 +696,12 @@ CREATE TABLE `documents` (
   `idDocuments` int(11) NOT NULL AUTO_INCREMENT,
   `PersonID` int(11) DEFAULT NULL,
   `TypeID` int(11) DEFAULT NULL COMMENT 'Тип документа',
-  `Series` char(10) DEFAULT NULL COMMENT 'Серия',
-  `Numbers` char(15) DEFAULT NULL COMMENT 'Номер',
+  `Series` char(10) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Серия',
+  `Numbers` char(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Номер',
   `DateGet` date DEFAULT NULL,
   `ZNOPin` int(11) DEFAULT NULL,
   `AtestatValue` float DEFAULT NULL COMMENT 'Балл аттестата',
-  `Issued` varchar(250) DEFAULT NULL COMMENT 'Кем выданый',
+  `Issued` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Кем выданый',
   `isCopy` tinyint(4) DEFAULT NULL COMMENT 'Является ли копией?',
   `isForeinghEntrantDocument` tinyint(4) NOT NULL,
   `isNotCheckAttestat` tinyint(4) NOT NULL,
@@ -715,44 +715,8 @@ CREATE TABLE `documents` (
   KEY `fk_documents_2` (`PersonID`),
   CONSTRAINT `fk_Documents_1` FOREIGN KEY (`TypeID`) REFERENCES `persondocumenttypes` (`idPersonDocumentTypes`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_documents_2` FOREIGN KEY (`PersonID`) REFERENCES `person` (`idPerson`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33746 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER insert_documents BEFORE INSERT ON documents
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_documents BEFORE UPDATE ON documents
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `documentsubject`
@@ -775,44 +739,8 @@ CREATE TABLE `documentsubject` (
   KEY `fk_DocumentSubject_2` (`SubjectID`),
   CONSTRAINT `fk_DocumentSubject_1` FOREIGN KEY (`DocumentID`) REFERENCES `documents` (`idDocuments`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_DocumentSubject_2` FOREIGN KEY (`SubjectID`) REFERENCES `subjects` (`idSubjects`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18528 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER insert_documentsubject BEFORE INSERT ON documentsubject
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_documentsubject BEFORE UPDATE ON documentsubject
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `edbo_data`
@@ -822,53 +750,51 @@ DROP TABLE IF EXISTS `edbo_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `edbo_data` (
-  `ID` int(9) NOT NULL,
-  `PIB` varchar(255) DEFAULT NULL,
-  `EZ` int(2) DEFAULT NULL COMMENT 'Електронна заявка',
-  `Status` varchar(64) DEFAULT NULL,
-  `Created` varchar(64) DEFAULT NULL,
-  `PersonCase` varchar(16) DEFAULT NULL,
-  `Course` int(4) DEFAULT NULL,
-  `EduForm` varchar(16) DEFAULT NULL,
-  `EduQualification` varchar(64) DEFAULT NULL,
-  `B` int(4) DEFAULT NULL,
-  `K` int(4) DEFAULT NULL,
-  `RatingPoints` float DEFAULT NULL,
-  `SpecCode` varchar(64) DEFAULT NULL,
-  `Direction` varchar(128) DEFAULT NULL,
-  `SpecialCode` varchar(64) DEFAULT NULL,
-  `Speciality` varchar(128) DEFAULT NULL,
-  `Specialization` varchar(128) DEFAULT NULL,
-  `StructBranch` varchar(128) DEFAULT NULL,
-  `Changed` varchar(64) DEFAULT NULL,
-  `DetailPoints` varchar(128) DEFAULT NULL,
-  `DocType` varchar(128) DEFAULT NULL,
-  `DocSeria` varchar(16) DEFAULT NULL,
-  `DocNumber` varchar(64) DEFAULT NULL,
-  `DocPoint` float DEFAULT NULL,
-  `DocDate` varchar(32) DEFAULT NULL,
-  `Honours` varchar(64) DEFAULT NULL,
-  `EntranceType` varchar(128) DEFAULT NULL,
-  `EntranceReason` varchar(128) DEFAULT NULL,
-  `Benefit` int(2) DEFAULT NULL,
-  `PriorityEntry` int(2) DEFAULT NULL,
-  `Quota` int(2) DEFAULT NULL,
-  `Language` varchar(128) DEFAULT NULL,
-  `OI` int(2) DEFAULT NULL,
-  `Category` varchar(64) DEFAULT NULL,
-  `Gender` varchar(64) DEFAULT NULL,
-  `Citizen` varchar(64) DEFAULT NULL,
-  `Country` varchar(192) DEFAULT NULL,
-  `TH` varchar(64) DEFAULT NULL,
-  `Tel` varchar(64) DEFAULT NULL,
-  `MobTel` varchar(64) DEFAULT NULL,
-  `OD` int(2) DEFAULT NULL,
-  `NeedHostel` int(2) DEFAULT NULL,
-  `EntranceCodes` varchar(32) DEFAULT NULL COMMENT 'Коди вступу',
-  PRIMARY KEY (`ID`),
-  KEY `PIB` (`PIB`),
-  KEY `PIB_2` (`PIB`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ID` int(9) NOT NULL COMMENT 'Ідентифікатор ЄДЕБО',
+  `PIB` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Прізвище, ім''я, по-батькові',
+  `EZ` int(2) NOT NULL DEFAULT '0' COMMENT 'Електронна заявка',
+  `Status` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Статус заявки',
+  `Created` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Дата/час створення заявки',
+  `PersonCase` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Номер особової справи',
+  `Course` int(4) DEFAULT NULL COMMENT 'Курс',
+  `EduForm` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Форма навчання',
+  `EduQualification` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Освітньо-кваліфікаційний рівень',
+  `B` int(4) DEFAULT NULL COMMENT 'Заявка на бюджет',
+  `K` int(4) DEFAULT NULL COMMENT 'Заявка на контракт',
+  `RatingPoints` float DEFAULT NULL COMMENT 'Рейтингові бали (загальна сума)',
+  `SpecCode` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Код напряму',
+  `Direction` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Напрям',
+  `SpecialCode` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Код спеціальності',
+  `Speciality` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Спеціальність',
+  `Specialization` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Спеціалізація',
+  `StructBranch` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Структурний підрозділ',
+  `Changed` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Дата/час останнього редагування заявки',
+  `DetailPoints` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Деталізація балів',
+  `DocType` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Тип документа',
+  `DocSeria` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Серія документа',
+  `DocNumber` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Номер документа',
+  `DocPoint` float DEFAULT NULL COMMENT 'Середній бал документа',
+  `DocDate` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Дата видачі документа',
+  `Honours` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Відзнака',
+  `EntranceType` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Тип вступу',
+  `EntranceReason` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Причина вступу',
+  `Benefit` int(2) DEFAULT NULL COMMENT 'Вступ поза конкурсом ?',
+  `PriorityEntry` int(2) DEFAULT NULL COMMENT 'Першочерговий вступ ?',
+  `Quota` int(2) DEFAULT NULL COMMENT 'Цільовий вступ ?',
+  `Language` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Мова',
+  `OI` int(2) DEFAULT NULL COMMENT 'Іноземний резидент ?',
+  `Category` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Категорія іноземців',
+  `Gender` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Стать',
+  `Citizen` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Чи є громадянином України',
+  `Country` varchar(192) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Країна абітурієнта',
+  `TH` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'ТН',
+  `Tel` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Домашній телефон',
+  `MobTel` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Мобільний телефон',
+  `OD` int(2) DEFAULT NULL COMMENT 'Оригінал документа ?',
+  `NeedHostel` int(2) DEFAULT NULL COMMENT 'Потребує гуртожиток ?',
+  `EntranceCodes` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Коди вступу',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Дані ЄДЕБО';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -880,9 +806,9 @@ DROP TABLE IF EXISTS `educationclass`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `educationclass` (
   `idEducationClass` int(11) NOT NULL,
-  `EducationClassName` varchar(100) NOT NULL,
+  `EducationClassName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idEducationClass`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -894,13 +820,13 @@ DROP TABLE IF EXISTS `educationtype`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `educationtype` (
   `idEducationType` int(11) NOT NULL,
-  `EducationTypeFullName` varchar(100) DEFAULT NULL,
-  `EducationTypeShortName` varchar(50) DEFAULT NULL,
+  `EducationTypeFullName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `EducationTypeShortName` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `EducationTypeClassID` int(11) DEFAULT NULL,
   PRIMARY KEY (`idEducationType`),
   KEY `fk_EducationType_1_idx` (`EducationTypeClassID`),
   CONSTRAINT `fk_EducationType_1` FOREIGN KEY (`EducationTypeClassID`) REFERENCES `educationclass` (`idEducationClass`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -949,12 +875,12 @@ DROP TABLE IF EXISTS `facultets`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `facultets` (
   `idFacultet` int(11) NOT NULL,
-  `FacultetFullName` varchar(255) DEFAULT NULL,
-  `FacultetShortName` varchar(45) DEFAULT NULL,
-  `FacultetKode` char(40) DEFAULT NULL,
-  `FacultetTypeName` varchar(45) DEFAULT NULL,
+  `FacultetFullName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `FacultetShortName` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `FacultetKode` char(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `FacultetTypeName` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idFacultet`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -987,12 +913,12 @@ DROP TABLE IF EXISTS `koatuulevel1`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `koatuulevel1` (
   `idKOATUULevel1` int(11) NOT NULL,
-  `KOATUULevel1Code` char(12) DEFAULT NULL,
-  `KOATUULevel1FullName` varchar(50) DEFAULT NULL,
-  `KOATUULevel1Name` varchar(50) DEFAULT NULL,
+  `KOATUULevel1Code` char(12) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel1FullName` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel1Name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idKOATUULevel1`),
   KEY `name_idx` (`KOATUULevel1FullName`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1004,16 +930,16 @@ DROP TABLE IF EXISTS `koatuulevel2`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `koatuulevel2` (
   `idKOATUULevel2` int(11) NOT NULL,
-  `KOATUULevel2Code` char(12) DEFAULT NULL,
-  `KOATUULevel2FullName` varchar(75) DEFAULT NULL,
-  `KOATUULevel2Name` varchar(75) DEFAULT NULL,
-  `KOATUULevel2Type` char(2) DEFAULT NULL,
+  `KOATUULevel2Code` char(12) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel2FullName` varchar(75) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel2Name` varchar(75) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel2Type` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
   `KOATUULevel1ID` int(11) DEFAULT NULL,
   PRIMARY KEY (`idKOATUULevel2`),
   KEY `name_idx` (`KOATUULevel2Name`),
   KEY `fk_KOATUULevel2_1_idx` (`KOATUULevel1ID`),
   CONSTRAINT `fk_KOATUULevel2_1` FOREIGN KEY (`KOATUULevel1ID`) REFERENCES `koatuulevel1` (`idKOATUULevel1`) ON DELETE CASCADE ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1025,16 +951,16 @@ DROP TABLE IF EXISTS `koatuulevel3`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `koatuulevel3` (
   `idKOATUULevel3` int(11) NOT NULL,
-  `KOATUULevel3Code` char(10) DEFAULT NULL,
-  `KOATUULevel3FullName` varchar(150) DEFAULT NULL,
-  `KOATUULevel3Name` varchar(50) DEFAULT NULL,
-  `KOATUULevel3Type` char(2) DEFAULT NULL,
+  `KOATUULevel3Code` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel3FullName` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel3Name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUULevel3Type` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
   `KOATUULevel2ID` int(11) DEFAULT NULL,
   PRIMARY KEY (`idKOATUULevel3`),
   KEY `name_idx` (`KOATUULevel3Name`),
   KEY `fk_KOATUULevel3_1_idx` (`KOATUULevel2ID`),
   CONSTRAINT `fk_KOATUULevel3_1` FOREIGN KEY (`KOATUULevel2ID`) REFERENCES `koatuulevel2` (`idKOATUULevel2`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1046,10 +972,10 @@ DROP TABLE IF EXISTS `languages`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `languages` (
   `idLanguages` int(11) NOT NULL,
-  `LanguagesCode` char(4) DEFAULT NULL,
-  `LanguagesName` char(20) DEFAULT NULL,
+  `LanguagesCode` char(4) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `LanguagesName` char(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idLanguages`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1102,12 +1028,12 @@ DROP TABLE IF EXISTS `olympiadsawards`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `olympiadsawards` (
   `idOlimpiad` int(11) NOT NULL COMMENT 'Идентификатор олимпиады',
-  `OlimpiadName` varchar(200) NOT NULL COMMENT 'Название олимпиады',
+  `OlimpiadName` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Название олимпиады',
   `OlympiadAwardID` int(11) NOT NULL COMMENT 'Идентификатор поощрения олимпиады',
-  `OlympiadAwardName` varchar(200) NOT NULL,
+  `OlympiadAwardName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `OlympiadAwardBonus` float NOT NULL COMMENT 'Бонус поощрения (баллы)',
   PRIMARY KEY (`OlympiadAwardID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Список призовых мест и олимпиад';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Список призовых мест и олимпиад';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1119,10 +1045,10 @@ DROP TABLE IF EXISTS `parametersquery`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `parametersquery` (
   `code` int(11) NOT NULL AUTO_INCREMENT,
-  `value` varchar(135) NOT NULL,
-  `coment` varchar(255) NOT NULL,
+  `value` varchar(135) COLLATE utf8_unicode_ci NOT NULL,
+  `coment` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1135,32 +1061,32 @@ DROP TABLE IF EXISTS `person`;
 CREATE TABLE `person` (
   `idPerson` int(11) NOT NULL AUTO_INCREMENT,
   `Birthday` date DEFAULT NULL,
-  `BirthPlace` varchar(255) NOT NULL,
+  `BirthPlace` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `PersonSexID` int(11) DEFAULT NULL,
-  `FirstName` varchar(100) DEFAULT NULL,
-  `MiddleName` varchar(100) DEFAULT NULL,
-  `LastName` varchar(100) DEFAULT NULL,
+  `FirstName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `MiddleName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `LastName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `KOATUUCodeL1ID` int(11) DEFAULT NULL,
   `KOATUUCodeL2ID` int(11) DEFAULT NULL,
   `KOATUUCodeL3ID` int(11) DEFAULT NULL,
   `IsResident` tinyint(4) DEFAULT NULL,
   `PersonEducationTypeID` int(11) DEFAULT NULL,
   `StreetTypeID` int(11) DEFAULT NULL,
-  `Address` varchar(250) DEFAULT NULL,
-  `HomeNumber` char(10) DEFAULT NULL,
-  `PostIndex` char(10) DEFAULT NULL,
+  `Address` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `HomeNumber` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PostIndex` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `SchoolID` int(11) DEFAULT NULL,
-  `FirstNameR` varchar(100) DEFAULT NULL,
-  `MiddleNameR` varchar(100) DEFAULT NULL,
-  `LastNameR` varchar(100) DEFAULT NULL,
+  `FirstNameR` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `MiddleNameR` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `LastNameR` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `LanguageID` int(11) NOT NULL,
   `CountryID` int(11) NOT NULL,
-  `PhotoName` varchar(250) DEFAULT NULL,
+  `PhotoName` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isCampus` tinyint(4) DEFAULT NULL COMMENT '0 - нет необходимости в общежитии,\n1 - есть необходимость в общежитии.',
   `Modified` datetime DEFAULT NULL,
   `CreateDate` datetime DEFAULT NULL,
   `SysUserID` int(11) DEFAULT NULL,
-  `codeU` char(40) DEFAULT NULL COMMENT 'Код персоны в базе данных ЕДБО',
+  `codeU` char(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Код персоны в базе данных ЕДБО',
   `edboID` int(11) DEFAULT NULL COMMENT 'Идентификатор персоны в базе данных ЕДБО',
   `isSamaSchoolAddr` tinyint(4) NOT NULL,
   PRIMARY KEY (`idPerson`),
@@ -1182,45 +1108,8 @@ CREATE TABLE `person` (
   CONSTRAINT `fk_person_7` FOREIGN KEY (`KOATUUCodeL1ID`) REFERENCES `koatuulevel1` (`idKOATUULevel1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_person_8` FOREIGN KEY (`LanguageID`) REFERENCES `languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_person_9` FOREIGN KEY (`SysUserID`) REFERENCES `sys_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7124 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `insert_person` BEFORE INSERT ON `person`
-FOR EACH ROW BEGIN
-    SET NEW.`Modified` = NOW();
-    SET NEW.`CreateDate` = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `update_person` before update ON `person`
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Temporary table structure for view `person_contacts_view`
@@ -1358,10 +1247,10 @@ DROP TABLE IF EXISTS `personbasespeciality`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personbasespeciality` (
   `idPersonBaseSpeciality` int(11) NOT NULL AUTO_INCREMENT,
-  `PersonBaseSpecialityName` varchar(150) DEFAULT NULL COMMENT 'Название',
-  `PersonBaseSpecialityClasifierCode` char(15) DEFAULT NULL COMMENT 'код по классификации МОН',
+  `PersonBaseSpecialityName` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Название',
+  `PersonBaseSpecialityClasifierCode` char(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'код по классификации МОН',
   PRIMARY KEY (`idPersonBaseSpeciality`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Справочник с перечнем специальностей в дипломах баклавров и ';
+) ENGINE=InnoDB AUTO_INCREMENT=73129 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Справочник с перечнем специальностей в дипломах баклавров и ';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1382,44 +1271,8 @@ CREATE TABLE `personbenefitdocument` (
   KEY `fk_PersonBenefitDocument_2` (`DocumentID`),
   CONSTRAINT `fk_PersonBenefitDocument_1` FOREIGN KEY (`PersonBenefitID`) REFERENCES `personbenefits` (`idPersonBenefits`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PersonBenefitDocument_2` FOREIGN KEY (`DocumentID`) REFERENCES `documents` (`idDocuments`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER inster_personbenefitdocument BEFORE INSERT ON personbenefitdocument
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_personbenefitdocument BEFORE UPDATE ON personbenefitdocument
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `personbenefits`
@@ -1432,9 +1285,9 @@ CREATE TABLE `personbenefits` (
   `idPersonBenefits` int(11) NOT NULL AUTO_INCREMENT,
   `PersonID` int(11) DEFAULT NULL,
   `BenefitID` int(11) DEFAULT NULL,
-  `Series` varchar(50) DEFAULT NULL,
-  `Numbers` varchar(50) DEFAULT NULL,
-  `Issued` varchar(255) DEFAULT NULL,
+  `Series` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Numbers` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Issued` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Modified` datetime DEFAULT NULL,
   `SysUserID` int(11) DEFAULT NULL,
   `edboID` int(11) DEFAULT NULL COMMENT 'Идентификатор записи о льготе в базе ЕДБО',
@@ -1443,44 +1296,8 @@ CREATE TABLE `personbenefits` (
   KEY `fk_PersonBenefits_2` (`BenefitID`),
   CONSTRAINT `fk_PersonBenefits_1` FOREIGN KEY (`PersonID`) REFERENCES `person` (`idPerson`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PersonBenefits_2` FOREIGN KEY (`BenefitID`) REFERENCES `benefit` (`idBenefit`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1189 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER insert_personbenefits BEFORE INSERT ON personbenefits
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_personbenefits BEFORE UPDATE ON personbenefits
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `personcontacts`
@@ -1493,7 +1310,7 @@ CREATE TABLE `personcontacts` (
   `idPersonContacts` int(11) NOT NULL AUTO_INCREMENT,
   `PersonID` int(11) DEFAULT NULL,
   `PersonContactTypeID` int(11) DEFAULT NULL,
-  `Value` varchar(50) DEFAULT NULL,
+  `Value` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Modified` datetime DEFAULT NULL COMMENT 'Дата последней модификации',
   `SysUserID` int(11) DEFAULT NULL COMMENT 'Пользователь, внесший последнюю модификацию',
   PRIMARY KEY (`idPersonContacts`),
@@ -1501,44 +1318,8 @@ CREATE TABLE `personcontacts` (
   KEY `fk_PersonContacts_2` (`PersonContactTypeID`),
   CONSTRAINT `fk_PersonContacts_1` FOREIGN KEY (`PersonID`) REFERENCES `person` (`idPerson`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PersonContacts_2` FOREIGN KEY (`PersonContactTypeID`) REFERENCES `personcontacttypes` (`idPersonContactType`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14245 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER insert_personcontacts BEFORE INSERT ON personcontacts
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_personcontacts BEFORE UPDATE ON personcontacts
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `personcontacttypes`
@@ -1549,9 +1330,9 @@ DROP TABLE IF EXISTS `personcontacttypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personcontacttypes` (
   `idPersonContactType` int(11) NOT NULL,
-  `PersonContactTypeName` char(10) DEFAULT NULL,
+  `PersonContactTypeName` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idPersonContactType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1566,13 +1347,13 @@ CREATE TABLE `personcoursesdp` (
   `PersonID` int(11) DEFAULT NULL,
   `CourseDPID` int(11) DEFAULT NULL,
   `edboID` int(11) DEFAULT NULL COMMENT 'Идентификатор записи в едбо',
-  `guid` varchar(45) DEFAULT NULL,
+  `guid` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idPersonCourses`),
   KEY `fk_personcourses_1` (`PersonID`),
   KEY `fk_personcourses_2` (`CourseDPID`),
   CONSTRAINT `fk_personcourses_1` FOREIGN KEY (`PersonID`) REFERENCES `person` (`idPerson`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_personcourses_2` FOREIGN KEY (`CourseDPID`) REFERENCES `coursedp` (`idCourseDP`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Подготовительные курсы персоны';
+) ENGINE=InnoDB AUTO_INCREMENT=274 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Подготовительные курсы персоны';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1584,8 +1365,8 @@ DROP TABLE IF EXISTS `persondocumentsawardstypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `persondocumentsawardstypes` (
   `idPersonDocumentsAwardsTypes` int(3) NOT NULL,
-  `PersonDocumentsAwardsTypesName` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `PersonDocumentsAwardsTypesName` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1597,10 +1378,10 @@ DROP TABLE IF EXISTS `persondocumenttypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `persondocumenttypes` (
   `idPersonDocumentTypes` int(11) NOT NULL,
-  `PersonDocumentTypesName` varchar(100) DEFAULT NULL,
+  `PersonDocumentTypesName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `IsEntrantDocument` int(11) DEFAULT NULL,
   PRIMARY KEY (`idPersonDocumentTypes`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1612,10 +1393,10 @@ DROP TABLE IF EXISTS `personeducationforms`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personeducationforms` (
   `idPersonEducationForm` int(11) NOT NULL COMMENT 'Идентификатор формы обучения персоны',
-  `PersonEducationFormName` varchar(45) DEFAULT NULL COMMENT 'Название формы обучения персоны',
+  `PersonEducationFormName` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Название формы обучения персоны',
   `isVisible` tinyint(4) DEFAULT NULL COMMENT 'Флаг видимости формы обучения для оператора системы',
   PRIMARY KEY (`idPersonEducationForm`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Таблица хранит формы обучения персоны';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Таблица хранит формы обучения персоны';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1627,9 +1408,9 @@ DROP TABLE IF EXISTS `personeducationpaymenttypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personeducationpaymenttypes` (
   `idEducationPaymentTypes` int(11) NOT NULL,
-  `EducationPaymentTypesName` char(15) DEFAULT NULL,
+  `EducationPaymentTypesName` char(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idEducationPaymentTypes`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1641,9 +1422,9 @@ DROP TABLE IF EXISTS `personeducationtypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personeducationtypes` (
   `idPersonEducationTypes` int(11) NOT NULL,
-  `PersonEducationTypesName` char(20) DEFAULT NULL,
+  `PersonEducationTypesName` char(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idPersonEducationTypes`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1655,9 +1436,9 @@ DROP TABLE IF EXISTS `personenterancetypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personenterancetypes` (
   `idPersonEnteranceType` int(11) NOT NULL,
-  `PersonEnteranceTypeName` varchar(50) DEFAULT NULL,
+  `PersonEnteranceTypeName` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idPersonEnteranceType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1677,7 +1458,7 @@ CREATE TABLE `personolympiad` (
   KEY `fk_PersonOlympiad_2` (`PersonID`),
   CONSTRAINT `fk_PersonOlympiad_1` FOREIGN KEY (`OlympiadAwarID`) REFERENCES `olympiadsawards` (`OlympiadAwardID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_PersonOlympiad_2` FOREIGN KEY (`PersonID`) REFERENCES `person` (`idPerson`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Список олимпиад персоны';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Список олимпиад персоны';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1689,11 +1470,11 @@ DROP TABLE IF EXISTS `personrequeststatustypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personrequeststatustypes` (
   `idPersonRequestStatusType` int(11) NOT NULL COMMENT 'Id_PersonRequestStatusType Идентификатор заявки',
-  `PersonRequestStatusCode` varchar(20) NOT NULL COMMENT 'Текстовый код статуса',
-  `PersonRequestStatusTypeName` varchar(50) NOT NULL COMMENT 'Название статуса заявки',
-  `PersonRequestStatusTypeDescription` varchar(100) NOT NULL COMMENT 'Описание статуса заявки',
+  `PersonRequestStatusCode` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Текстовый код статуса',
+  `PersonRequestStatusTypeName` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Название статуса заявки',
+  `PersonRequestStatusTypeDescription` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Описание статуса заявки',
   PRIMARY KEY (`idPersonRequestStatusType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='PersonRequestStatusTypesGet (string SessionGUID, string ActualDate, int Id_Langu';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='PersonRequestStatusTypesGet (string SessionGUID, string ActualDate, int Id_Langu';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1705,9 +1486,9 @@ DROP TABLE IF EXISTS `personsextypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `personsextypes` (
   `idPersonSexTypes` int(11) NOT NULL,
-  `PersonSexTypesName` char(12) NOT NULL,
+  `PersonSexTypesName` char(12) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idPersonSexTypes`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1879,7 +1660,7 @@ CREATE TABLE `personspeciality` (
   `OlympiadID` int(11) NOT NULL,
   `GraduatedUniversitieID` int(11) NOT NULL,
   `GraduatedSpecialitieID` int(11) NOT NULL,
-  `GraduatedSpeciality` varchar(255) NOT NULL,
+  `GraduatedSpeciality` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `PersonDocumentsAwardsTypesID` int(11) NOT NULL,
   `isTarget` tinyint(4) DEFAULT NULL,
   `isContract` tinyint(4) DEFAULT NULL,
@@ -1889,7 +1670,7 @@ CREATE TABLE `personspeciality` (
   `isNotCheckAttestat` tinyint(4) NOT NULL,
   `AdditionalBall` float DEFAULT NULL,
   `CoursedpBall` float DEFAULT NULL,
-  `AdditionalBallComment` varchar(255) NOT NULL,
+  `AdditionalBallComment` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `isCopyEntrantDoc` tinyint(4) DEFAULT NULL,
   `DocumentSubject1` int(11) DEFAULT NULL,
   `DocumentSubject2` int(11) DEFAULT NULL,
@@ -1913,13 +1694,13 @@ CREATE TABLE `personspeciality` (
   `Modified` datetime DEFAULT NULL COMMENT 'Дата последней модификации',
   `SysUserID` int(11) DEFAULT NULL COMMENT 'Идентификатор пользователя, внесшего последнюю модификацию в таблицу',
   `edboID` int(11) DEFAULT NULL COMMENT 'идентификатор записи в базе ЕДБО',
-  `CustomerName` varchar(200) NOT NULL,
-  `DocCustomer` varchar(250) NOT NULL,
+  `CustomerName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `DocCustomer` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `AcademicSemesterID` int(11) NOT NULL,
-  `CustomerAddress` varchar(100) NOT NULL,
-  `CustomerPaymentDetails` varchar(250) NOT NULL,
+  `CustomerAddress` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `CustomerPaymentDetails` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `DateOfContract` date NOT NULL,
-  `PaymentDate` varchar(30) NOT NULL,
+  `PaymentDate` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idPersonSpeciality`),
   KEY `fk_PersonSepciality_1` (`PersonID`),
   KEY `fk_PersonSepciality_2` (`SepcialityID`),
@@ -1950,45 +1731,8 @@ CREATE TABLE `personspeciality` (
   CONSTRAINT `fk_personsepciality_7` FOREIGN KEY (`CourseID`) REFERENCES `courses` (`idCourse`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_personsepciality_8` FOREIGN KEY (`CausalityID`) REFERENCES `causality` (`idCausality`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_personsepciality_9` FOREIGN KEY (`DocumentSubject1`) REFERENCES `documentsubject` (`idDocumentSubject`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14226 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `insert_personspeciality` BEFORE INSERT ON `personspeciality`
-FOR EACH ROW BEGIN
-    SET NEW.`Modified` = NOW();
-    SET NEW.`CreateDate` = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_personspeciality BEFORE UPDATE ON personspeciality
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Temporary table structure for view `personspeciality_counts`
@@ -2038,10 +1782,10 @@ CREATE TABLE `prices` (
   `SpecialityID` int(11) NOT NULL,
   `PriceYearInNumbers` int(11) NOT NULL,
   `PriceSemesterInNumbers` int(11) NOT NULL,
-  `PriceYearInWords` varchar(250) NOT NULL,
-  `EducationalServices` varchar(50) NOT NULL DEFAULT '2013/2014-2014/2015',
+  `PriceYearInWords` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `EducationalServices` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '2013/2014-2014/2015',
   PRIMARY KEY (`idPrice`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Ціни на навчання';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Ціни на навчання';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2053,9 +1797,9 @@ DROP TABLE IF EXISTS `qualifications`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `qualifications` (
   `idQualification` int(11) NOT NULL,
-  `QualificationName` varchar(45) DEFAULT NULL,
+  `QualificationName` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idQualification`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2067,11 +1811,11 @@ DROP TABLE IF EXISTS `requeststatus`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `requeststatus` (
   `idRequestStatus` int(11) NOT NULL,
-  `RequestStatusName` varchar(45) DEFAULT NULL COMMENT 'Название',
-  `RequestStatusDesription` varchar(150) DEFAULT NULL COMMENT 'Описание',
+  `RequestStatusName` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Название',
+  `RequestStatusDesription` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Описание',
   `RequestStatusCode` char(10) CHARACTER SET big5 DEFAULT NULL,
   PRIMARY KEY (`idRequestStatus`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Статус заявки';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Статус заявки';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2104,26 +1848,26 @@ DROP TABLE IF EXISTS `schools`;
 CREATE TABLE `schools` (
   `idSchool` int(11) NOT NULL,
   `EducationTypeID` int(11) DEFAULT NULL,
-  `Kode_School` varchar(45) DEFAULT NULL,
-  `SchoolName` varchar(250) DEFAULT NULL,
-  `SchoolShortName` varchar(200) DEFAULT NULL,
-  `KOATUUCode` char(10) DEFAULT NULL,
-  `KOATUUFullName` varchar(150) DEFAULT NULL,
+  `Kode_School` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolName` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolShortName` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUUCode` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `KOATUUFullName` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `StreetTypeID` int(11) DEFAULT NULL,
-  `StreetName` varchar(150) DEFAULT NULL,
-  `HouceNum` char(15) DEFAULT NULL,
-  `SchoolBossLastName` varchar(100) DEFAULT NULL,
-  `SchoolBossFirstName` varchar(100) DEFAULT NULL,
-  `SchoolBossMiddleName` varchar(100) DEFAULT NULL,
-  `SchoolPhone` varchar(50) DEFAULT NULL,
-  `SchoolMobile` varchar(50) DEFAULT NULL,
-  `SchoolEMail` varchar(100) DEFAULT NULL,
+  `StreetName` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `HouceNum` char(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolBossLastName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolBossFirstName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolBossMiddleName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolPhone` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolMobile` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SchoolEMail` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idSchool`),
   KEY `fk_Schools_1` (`EducationTypeID`),
   KEY `fk_Schools_3` (`StreetTypeID`),
   CONSTRAINT `fk_Schools_1` FOREIGN KEY (`EducationTypeID`) REFERENCES `educationtype` (`idEducationType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Schools_3` FOREIGN KEY (`StreetTypeID`) REFERENCES `streettypes` (`idStreetTypes`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2135,12 +1879,12 @@ DROP TABLE IF EXISTS `specialities`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `specialities` (
   `idSpeciality` int(11) NOT NULL,
-  `SpecialityName` varchar(100) DEFAULT NULL,
-  `SpecialityDirectionName` varchar(100) DEFAULT NULL,
-  `SpecialitySpecializationName` varchar(100) DEFAULT NULL,
-  `SpecialityKode` char(40) DEFAULT NULL,
+  `SpecialityName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SpecialityDirectionName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SpecialitySpecializationName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SpecialityKode` char(40) COLLATE utf8_unicode_ci DEFAULT NULL,
   `FacultetID` int(11) DEFAULT NULL,
-  `SpecialityClasifierCode` char(12) DEFAULT NULL,
+  `SpecialityClasifierCode` char(12) COLLATE utf8_unicode_ci DEFAULT NULL,
   `SpecialityBudgetCount` int(11) DEFAULT NULL COMMENT 'Количество бюджетных мест для специальности ВУЗа',
   `SpecialityContractCount` int(11) DEFAULT NULL COMMENT 'Количество контрактных мест для специальности ВУЗа',
   `isZaoch` tinyint(4) DEFAULT NULL COMMENT 'Идентификатор доступности для заочной формы обучения',
@@ -2152,51 +1896,15 @@ CREATE TABLE `specialities` (
   `Quota2` int(11) DEFAULT NULL COMMENT 'Квота целевиков',
   `YearPrice` double DEFAULT NULL,
   `SemPrice` double DEFAULT NULL,
-  `WordPrice` text,
+  `WordPrice` text COLLATE utf8_unicode_ci,
   `StudyPeriodID` int(11) DEFAULT NULL,
   PRIMARY KEY (`idSpeciality`),
   KEY `fk_Specialities_1` (`FacultetID`),
   KEY `fk_specialities_2` (`PersonEducationFormID`),
   CONSTRAINT `fk_Specialities_1` FOREIGN KEY (`FacultetID`) REFERENCES `facultets` (`idFacultet`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_specialities_2` FOREIGN KEY (`PersonEducationFormID`) REFERENCES `personeducationforms` (`idPersonEducationForm`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER insert_specialities BEFORE INSERT ON specialities
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_specialities BEFORE UPDATE ON specialities
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `specialitiesplaces`
@@ -2213,7 +1921,7 @@ CREATE TABLE `specialitiesplaces` (
   `Target` int(5) NOT NULL,
   `OutOfCompetition` int(5) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2238,44 +1946,8 @@ CREATE TABLE `specialitysubjects` (
   CONSTRAINT `fk_SpecialitySubjects_1` FOREIGN KEY (`SpecialityID`) REFERENCES `specialities` (`idSpeciality`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_SpecialitySubjects_2` FOREIGN KEY (`SubjectID`) REFERENCES `subjects` (`idSubjects`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `specialitysubjects_ibfk_1` FOREIGN KEY (`LevelID`) REFERENCES `znolevels` (`idLevel`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=408 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER insert_specialitysubjects BEFORE INSERT ON specialitysubjects
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER update_specialitysubjects BEFORE UPDATE ON specialitysubjects
-FOR EACH ROW BEGIN
-    SET NEW.Modified = NOW();
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Temporary table structure for view `stat_graduated`
@@ -2320,10 +1992,10 @@ DROP TABLE IF EXISTS `streettypes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `streettypes` (
   `idStreetTypes` int(11) NOT NULL,
-  `StreetTypesFullName` char(15) DEFAULT NULL,
-  `StreetTypesShortName` char(15) DEFAULT NULL,
+  `StreetTypesFullName` char(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `StreetTypesShortName` char(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idStreetTypes`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2335,9 +2007,9 @@ DROP TABLE IF EXISTS `studyperiods`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `studyperiods` (
   `idStudyPeriod` int(11) NOT NULL AUTO_INCREMENT,
-  `StudyPeriodName` varchar(255) NOT NULL,
+  `StudyPeriodName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idStudyPeriod`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2350,12 +2022,12 @@ DROP TABLE IF EXISTS `subjects`;
 CREATE TABLE `subjects` (
   `idSubjects` int(11) NOT NULL,
   `idZNOSubject` int(11) DEFAULT NULL,
-  `SubjectName` varchar(50) DEFAULT NULL,
+  `SubjectName` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ParentSubject` int(11) DEFAULT NULL,
-  `SubjectKey` char(15) DEFAULT NULL,
+  `SubjectKey` char(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idSubjects`),
   KEY `idx_ZNO` (`idZNOSubject`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2367,9 +2039,9 @@ DROP TABLE IF EXISTS `sys_departments`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_departments` (
   `idDepartment` int(11) NOT NULL AUTO_INCREMENT,
-  `DepartmentName` varchar(255) NOT NULL,
+  `DepartmentName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idDepartment`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2381,21 +2053,21 @@ DROP TABLE IF EXISTS `sys_pk`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_pk` (
   `idPk` int(11) NOT NULL AUTO_INCREMENT,
-  `PkName` text NOT NULL,
+  `PkName` text COLLATE utf8_unicode_ci NOT NULL,
   `DepartmentID` int(11) NOT NULL,
   `CourseID` int(11) NOT NULL,
   `QualificationID` int(11) NOT NULL,
-  `SpecMask` text,
-  `Info` text NOT NULL,
+  `SpecMask` text COLLATE utf8_unicode_ci,
+  `Info` text COLLATE utf8_unicode_ci NOT NULL,
   `isBudget` tinyint(4) NOT NULL,
   `isContract` tinyint(4) NOT NULL,
   `isShortForm` tinyint(4) DEFAULT NULL,
   `EducationFormID` int(11) NOT NULL,
-  `printIP` varchar(12) NOT NULL,
-  `searchIP` varchar(12) NOT NULL,
+  `printIP` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
+  `searchIP` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idPk`),
   UNIQUE KEY `idPk` (`idPk`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2406,13 +2078,13 @@ DROP TABLE IF EXISTS `sys_roleassignments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_roleassignments` (
-  `itemname` varchar(64) NOT NULL,
-  `userid` varchar(64) NOT NULL,
-  `bizrule` text,
-  `data` text,
+  `itemname` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `userid` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `bizrule` text COLLATE utf8_unicode_ci,
+  `data` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`itemname`,`userid`),
   CONSTRAINT `sys_roleassignments_ibfk_1` FOREIGN KEY (`itemname`) REFERENCES `sys_roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2423,13 +2095,13 @@ DROP TABLE IF EXISTS `sys_rolechildren`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_rolechildren` (
-  `parent` varchar(64) NOT NULL,
-  `child` varchar(64) NOT NULL,
+  `parent` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `child` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`parent`,`child`),
   KEY `child` (`child`),
   CONSTRAINT `sys_rolechildren_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `sys_roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `sys_rolechildren_ibfk_2` FOREIGN KEY (`child`) REFERENCES `sys_roles` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2440,13 +2112,13 @@ DROP TABLE IF EXISTS `sys_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_roles` (
-  `name` varchar(64) NOT NULL,
+  `name` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `type` int(11) NOT NULL,
-  `description` text,
-  `bizrule` text,
-  `data` text,
+  `description` text COLLATE utf8_unicode_ci,
+  `bizrule` text COLLATE utf8_unicode_ci,
+  `data` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2458,13 +2130,13 @@ DROP TABLE IF EXISTS `sys_users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `info` text NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `info` text COLLATE utf8_unicode_ci NOT NULL,
   `SysPkID` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2556,10 +2228,10 @@ DROP TABLE IF EXISTS `universities`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `universities` (
   `idUniversity` int(11) NOT NULL AUTO_INCREMENT,
-  `UniversityKode` varchar(36) NOT NULL COMMENT 'GUID НЗ',
-  `UniversityName` varchar(200) NOT NULL COMMENT 'Повна назва НЗ',
+  `UniversityKode` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT 'GUID НЗ',
+  `UniversityName` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Повна назва НЗ',
   PRIMARY KEY (`idUniversity`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Перелік НЗ';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Перелік НЗ';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2656,9 +2328,9 @@ DROP TABLE IF EXISTS `znolevels`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `znolevels` (
   `idLevel` int(11) NOT NULL AUTO_INCREMENT,
-  `LevelName` varchar(255) NOT NULL,
+  `LevelName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`idLevel`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3772,4 +3444,4 @@ CREATE TABLE `znolevels` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-09 10:39:01
+-- Dump completed on 2014-04-29 14:59:50

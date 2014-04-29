@@ -3,3 +3,4 @@ assets/
 /framework/cli/views/
 /images/Photos/
 /nbproject/private/
+/protected/data

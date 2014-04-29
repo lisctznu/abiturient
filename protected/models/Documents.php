@@ -60,13 +60,18 @@ class Documents extends ActiveRecord {
                 //debug('$ssubj->SubjectID='.$ssubj->SubjectID);
 
                 foreach ($ssubj as $rec) {
-                  if ($subject->subject->idSubjects == $rec->SubjectID) {
-                    //debug('$ssubj->SubjectID='.$ssubj->SubjectID);
-                    $res[$subject->idDocumentSubject] = $subject->subject->SubjectName . ": " . $subject->SubjectValue . " (№" . $zno->Numbers . " от " . $subject->DateGet . ", пін: " . $zno->ZNOPin . ")";
+                  if ($subject->subject1->idSubjects == $rec->SubjectID) {
+                    $res[$subject->idDocumentSubject] = $subject->subject1->SubjectName . ": " . $subject->SubjectValue . " (№" . $zno->Numbers . " от " . $subject->DateGet . ", пін: " . $zno->ZNOPin . ")";
+                  }
+                  if ($subject->subject2->idSubjects == $rec->SubjectID) {
+                    $res[$subject->idDocumentSubject] = $subject->subject2->SubjectName . ": " . $subject->SubjectValue . " (№" . $zno->Numbers . " от " . $subject->DateGet . ", пін: " . $zno->ZNOPin . ")";
+                  }
+                  if ($subject->subject3->idSubjects == $rec->SubjectID) {
+                    $res[$subject->idDocumentSubject] = $subject->subject3->SubjectName . ": " . $subject->SubjectValue . " (№" . $zno->Numbers . " от " . $subject->DateGet . ", пін: " . $zno->ZNOPin . ")";
                   }
                 }
               } else {
-                $res[$subject->idDocumentSubject] = $subject->subject->SubjectName . ": " . $subject->SubjectValue . " (№" . $zno->Numbers . " от " . $subject->DateGet . ", пін: " . $zno->ZNOPin . ")";
+                $res[$subject->idDocumentSubject] = 'Невизначено_предмет' . ": " . $subject->SubjectValue . " (№" . $zno->Numbers . " от " . $subject->DateGet . ", пін: " . $zno->ZNOPin . ")";
               }
             }
           }

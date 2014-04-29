@@ -2,7 +2,14 @@
 /* @var $data_items array */
 /* @var $model EdboData */
 ?>
-<h3>Завантаження даних ЄДЕБО із CSV файла</h3>
+<style>
+@font-face {
+    font-family: Oreos;
+    src: url("../css/oreos.ttf") format('truetype');
+    font-weight:100;
+}
+</style>
+<h3 style="font-family: Oreos;">  CSV data uploader (<span style='color:red;'>edbo</span>)  </h3>
 <div class="span12">
   <div class="span6">
     <?php

@@ -60,17 +60,40 @@
  * @property integer $RequestFromEB
  * @property integer $Quota1
  * @property integer $Quota2
+ * 
+ * Параметри, що опосередковано відносяться до БД
+ * @property Facultets $searchFaculty - модель для пошуку факультета
+ * @property Benefits $searchBenefit - модель для пошуку пільг
+ * @property mixed $searchID - ІД персони або заявки, або ЄДЕБО чи статус заявки
+ * @property string $NAME - ПІБ з видаленими незначущими пробілами
+ * @property string $SPEC - Спеціальність (разом із спеціалізацією і формою навчання)
+ * @property integer $rating_order_mode - прапорець: чи потрібно сортувати для рейтингу
+ * @property integer $status_confirmed - прапорець: вибрати лише зі статусом "допущено"
+ * @property integer $status_committed - прапорець: вибрати лише зі статусом "рекомендовано"
+ * @property integer $status_submitted - прапорець: вибрати лише зі статусом "до наказу"
+ * @property integer $edbo_mode - прапорець: вибрати дані, у яких є зв"язок із таблицею edbo_data
+ * @property integer $page_size - кількість записів, що відображаються на одній сторінці
+ * @property integer $mistakes_only - прапорець: вибрати лише ті дані, що не співпадають з даними із edbo_data
+ * @property string $DocValues - дані про відмітки в документах (розділені через ;)
+ * @property string $DocTypes - типи документів (розділені через ;)
+ * @property string $BenefitList - дані про пільги (розділені через ;;)
+ * @property string $idBenefitList - ІН пільг (розділені через ;;)
+ * @property string $isOutOfCompList - дані про те, чи надає пільга право вступу поза конкурсом (розділені через ;;)
+ * @property string $isExtraEntryList - дані про те, чи надає пільга право вступу першочергово (розділені через ;;)
+ * @property integer $isOutOfComp - чи є заявка з пільгою позаконкурсного вступу
+ * @property integer $isExtraEntry - чи є заявка з пільгою першочергового вступу
+ * @property integer[] $rating_counter - статичний масив лічильників для формування рейтингу
+ * @property integer $is_rating_order = $rating_order_mode (статична)
  */
 class Personspeciality extends ActiveRecord {
-
+/*Це не мої параметри, тому я їх не коментував*/
   public $StatusID = 1;
   public $currentMaxRequestNumber;
   public $currentMaxPersonRequestNumber;
   public $isHigherEducation = 0;
   public $isCopyEntrantDoc = 1;
-  
-  /* @var $searchFaculty Facultets */
-  /* @var $searchBenefit Benefits */
+/**********************************************/
+
   public $searchFaculty;
   public $searchBenefit;
   
@@ -292,13 +315,15 @@ class Personspeciality extends ActiveRecord {
   }
 
   public function validate($attributes = null, $clearErrors = true) {
-    if ($this->EntranceTypeID == 1)
+    if ($this->EntranceTypeID == 1){
       $this->scenario = "ZNO";
-    if ($this->EntranceTypeID == 2)
+    }
+    if ($this->EntranceTypeID == 2){
       $this->scenario = "EXAM";
-    if ($this->EntranceTypeID == 3)
+    }
+    if ($this->EntranceTypeID == 3){
       $this->scenario = "ZNOEXAM";
-
+    }
     return parent::validate($attributes, $clearErrors);
   }
 
@@ -482,7 +507,9 @@ class Personspeciality extends ActiveRecord {
   
   /**
    * Пошук із врахування зовнішніх реляційних відношень.
-   * Enjoy this code with smiles.
+   * Enjoy this code with smiles / %) %) %) /.
+   * @param bool $return_array_of_models default false
+   * @return \CActiveDataProvider
    */
   public function search_rel($return_array_of_models = false){
     $rating_order_mode = 0;
@@ -640,7 +667,7 @@ class Personspeciality extends ActiveRecord {
        $criteria->addCondition('t.StatusID IN '.$status_in);
       }
     }
-    
+    //вибираємо лише ті документи, у яких є бали (відмітки)
     $criteria->addCondition('docs.AtestatValue IS NOT NULL');
     
     if ($this->edbo_mode){
@@ -684,21 +711,25 @@ class Personspeciality extends ActiveRecord {
       $criteria->compare("t.SepcialityID",$this->SepcialityID);
     }
     
+    //дані групуються по ІД заявки
     $criteria->group = "t.idPersonSpeciality";
-    
-    $rating_order = '
-  isOutOfComp DESC,
-  IF (t.Quota1 IS NULL, 0, t.Quota1) DESC,
-  ComputedPoints DESC,
-  IF(SUM(benefit.isPV)>0,1,0) DESC';
+    //параметр сортування даних для формування рейтингу
+    $rating_order = 'isOutOfComp DESC,'//спочатку обираються ті, що поза конкурсом
+            . 'IF (t.Quota1 IS NULL, 0, t.Quota1) DESC,'//потім - цільовики
+            . 'ComputedPoints DESC,'//усі дані впорядковуються за рейтинговими балами
+            . 'IF(SUM(benefit.isPV)>0,1,0) DESC';//якщо є відмітка першочергового вступу - що ж... нехай щастить!
     if ($rating_order_mode > 0){
+      //якщо сортувати треба для формування рейтингу
       $criteria->order = $rating_order;
+      //відобразаити усі записи на одній сторінці
       $page_size = 50000;
       Personspeciality::$is_rating_order = true;
     }
     if ($return_array_of_models){
+      //для формування рейтингу в Excel-файлі
       return Personspeciality::model()->findAll($criteria);
     }
+    //стандартно повертається джерело даних
     return new CActiveDataProvider($this, array(
         'criteria' => $criteria,
         'sort' => array(

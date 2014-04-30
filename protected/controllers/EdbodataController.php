@@ -141,7 +141,7 @@ class EdbodataController extends Controller
   }
   
   /**
-   * Метод завантаження даних ЄДЕБО із CSV-файлу
+   * Метод формує сторінку, з якої можна завантажувати CSV-файли
    */
   public function actionDatauploader(){
       $SQL="SHOW FULL COLUMNS FROM edbo_data";
@@ -156,6 +156,11 @@ class EdbodataController extends Controller
       ));
   }
   
+  /**
+   * Метод збереження CSV-файлів (асинхронно)
+   * @return null
+   * @throws CHttpException
+   */
   public function actionUpload() {
     header('Vary: Accept');
     if (isset($_SERVER['HTTP_ACCEPT']) &&
@@ -169,44 +174,43 @@ class EdbodataController extends Controller
 
     $model = new EdboData();
     $model->csv_file = CUploadedFile::getInstance($model, 'csv_file');
+    
+    //якщо файл завантажено
     if ($model->csv_file !== null && $model->validate(array('csv_file'))) {
+      //формується назва файлу із його MD5-хешу
       $md5_name = md5_file($model->csv_file->getTempName());
       $ext = $model->csv_file->extensionName;
       $new_filename = Yii::app()->getBasePath().'/data/'.$md5_name.'.'.$ext;
+      //спроба збереження файлу
       if ($model->csv_file->saveAs($new_filename) !== true){
         $data[] = array('error', $new_filename. ' не зберігся...');
         echo json_encode($data);
         return ;
       }
+      
       $file = $new_filename;
       
+      //завантаження даних із файлу в таблицю edbo_data
       $ret_list = $this->LoadCsvToDB($file);
       $message = '';
-      
       if (!isset($ret_list[0]) || $ret_list[0]===false){
         $inserted = 'error';
         $message = (isset($ret_list[1]))? $ret_list[1] : 'Невідома помилка';
       } else {
         $inserted = $ret_list[0]." ";
         $updated = $ret_list[1]." ";
-        $message = " ( Втавлено : ". $inserted . ", оновлено : " . $updated . ') із ' . $list[2];
+        $message = " ( Втавлено : ". $inserted . ", оновлено : " . $updated . ') із ' . $ret_list[2];
       }
-      
-        $data[] = array(
-            'name' => $model->csv_file->name,
-            'type' => $model->csv_file->type,
-            'size' => $model->csv_file->size,
-            'uploaded' => $message,
-            // we need to return the place where our image has been saved
-            //'url' => $model->getImageUrl(), // Should we add a helper method?
-            // we need to provide a thumbnail url to display on the list
-            // after upload. Again, the helper method now getting thumbnail.
-            //'thumbnail_url' => $model->getImageUrl(MyModel::IMG_THUMBNAIL),
-            // we need to include the action that is going to delete the avatar
-            // if we want to after loading 
-            'delete_url' => $this->createUrl('/edbodata/deletecsv',array('path' => $file)),
-            'delete_type' => 'POST');
+      //дані для виведення (асинхронно)
+      $data[] = array(
+          'name' => $model->csv_file->name,
+          'type' => $model->csv_file->type,
+          'size' => $model->csv_file->size,
+          'uploaded' => $message,
+          'delete_url' => $this->createUrl('/edbodata/deletecsv',array('path' => $file)),
+          'delete_type' => 'POST');
     } else {
+      //якщо файл не пройшов валідацію
       if ($model->hasErrors('csv_file')) {
         $data[] = array('error', $model->getErrors('csv_file'));
       } else {
@@ -217,6 +221,9 @@ class EdbodataController extends Controller
     echo json_encode($data);
   }
   
+  /**
+   * Метод видалення CSV-файлу (асинхронно)
+   */
   public function actionDeletecsv(){
     if (Yii::app()->request->isPostRequest){
       $path = Yii::app()->request->getParam('path',null);
@@ -280,20 +287,24 @@ class EdbodataController extends Controller
     //загальний лічильник
     $id = 0;
     
+    $independent_counter = 0;
+    
     //цикл по всім рядкам
     foreach($arr_lines as $line) {
+      $independent_counter++;
       $id++;
-      if (trim($line," \t\n\r") == ""){
-        //якщо це пустий рядок, пропуск
-        $id--;
-        continue;
-      }
-      
       $edbo_model = new EdboData();
       
       /*перетворення тексту в потрібне кодування
         і обробка символів, що є сепараторами цілісних виразів, але це насправді не вони*/
       $line_utf8 = iconv('windows-1251','utf-8',$line);
+
+      if (mb_strlen(trim($line_utf8," \t\n\r"),'utf8') == 0){
+        //якщо це пустий рядок, пропуск
+        $id--;
+        continue;
+      }
+      
       $line_utf8_trio_quots_in_begin = str_replace(
               $fieldseparator.$wholestrseparator.$wholestrseparator.$wholestrseparator,
                       $fieldseparator.$wholestrseparator.'__quots__',
@@ -344,21 +355,19 @@ class EdbodataController extends Controller
           //про всяк випадок
           return array(false,'row_header with index '.$k.' doesn\'t exist');
         }
-        //врахування того, шщо деякі поля - дійсні числа у регулярному форматі
-        $data_item_3 = (strstr($row_header[$k]['Type'],'float')!==false)? 
-                (float)$data_item_2 : $data_item_2;
-        //врахування того, шщо деякі поля - дійсні числа у регулярному форматі
-        $data_item_4 = (strstr($row_header[$k]['Type'],'int')!==false)? 
-                (float)$data_item_3 : $data_item_3;
+        //врахування того, що деякі поля - дійсні числа у регулярному форматі
+        $is_float = (strstr($row_header[$k]['Type'],'float')!==false);
+        //врахування того, шщо деякі поля - цілі числа
+        $is_integer = (strstr($row_header[$k]['Type'],'int')!==false);
         
         /*врахування розміру поля таблиці БД*/
         $match = array();
         preg_match('/\(([0-9]+)\)/', $row_header[$k]['Type'], $match);
         $data_size = isset($match[1]) ? $match[1]  :  1024; 
-        $data_item = (mb_strlen($data_item_4,'utf8') > $data_size 
-                && is_string($data_item_4)) ? 
-                  mb_substr($data_item_4,0,$data_size,'utf8') 
-                  : $data_item_4;
+        $data_item = (mb_strlen($data_item_2,'utf8') > $data_size 
+                && !$is_float && !$is_integer) ? 
+                  mb_substr($data_item_2,0,$data_size,'utf8') 
+                  : $data_item_2;
         $edbo_attributes[$row_header[$k]['Field']] = $data_item;
         /************************************/
       }
@@ -372,9 +381,6 @@ class EdbodataController extends Controller
         continue;
       }
       
-      return array(false,serialize($edbo_attributes));
-      
-      
       //якщо рядок (кортеж) в таблиці БД існує, то його можна знайти по ID
       $edbo_existing_model = EdboData::model()->findByPk($edbo_attributes['ID']);
       $is_new = false;
@@ -386,28 +392,27 @@ class EdbodataController extends Controller
       //порівняння прибулих значень з існуюючими;
       //якщо усі такі самі, то оновлювати не треба
       for ($k = 0; ($k < $current_field_count && $edbo_existing_model); $k++){
-        $is_float_value = (strstr($row_header[$k]['Type'],'float') !== false);
         $edbo_field_value = $edbo_existing_model->getAttribute($row_header[$k]['Field']);
         $income_field_value = $edbo_attributes[$row_header[$k]['Field']];
-        $edbo_param = ($is_float_value)? 
-                (float)$edbo_field_value
-                : $edbo_field_value;
-        $income_param = ($is_float_value)? 
-                (float)$income_field_value
-                : $income_field_value;
+        $edbo_param = $edbo_field_value;
+        $income_param = $income_field_value;
         $is_change = ($income_param != $edbo_param);
         if ($is_change){ 
           break;
         }
       }
       
+      if (!$is_new & !$is_change){
+        continue;
+      }
       /*оновлення або створення нового запису в БД з перевірками*/
+      $result_of_saving_new_model = false;
       if ($is_new){
         $inserted++;
         $edbo_model->attributes = $edbo_attributes;
         $result_of_saving_new_model = $edbo_model->save();
       }
-      if ($is_new && !$result_of_saving_new_model){
+      if ($is_new && !$result_of_saving_new_model && !empty($edbo_model->errors)){
         $err_msgs = array();
         foreach ($edbo_model->errors as $ferrors){
           foreach ($ferrors as $err){
@@ -423,13 +428,15 @@ class EdbodataController extends Controller
         continue;
       }
       
-      
+      $result_of_saving_existing_model = false;
       if ($is_change){
         $updated++;
         $edbo_existing_model->attributes = $edbo_attributes;
+        
         $result_of_saving_existing_model = $edbo_existing_model->save();
+        
       }
-      if ($is_change && !$result_of_saving_existing_model){
+      if ($is_change && !$result_of_saving_existing_model && !empty($edbo_existing_model->errors)){
         $err_msgs = array();
         foreach ($edbo_existing_model->errors as $ferrors){
           foreach ($ferrors as $err){

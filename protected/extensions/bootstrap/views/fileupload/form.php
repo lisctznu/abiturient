@@ -11,7 +11,7 @@
 			endif;
 			?>
 		</span>
-        <!-- button type="submit" class="btn btn-primary start">
+        <button type="submit" class="btn btn-primary start">
             <i class="icon-upload icon-white"></i>
             <span>Вивантажити</span>
         </button>
@@ -22,7 +22,7 @@
         <button type="button" class="btn btn-danger delete">
             <i class="icon-trash icon-white"></i>
             <span>Видалити</span>
-        </button -->
+        </button >
         <input type="checkbox" class="toggle">
     </div>
     <div class="span5 fileupload-progress fade">

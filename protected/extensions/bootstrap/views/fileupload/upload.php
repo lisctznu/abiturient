@@ -14,7 +14,7 @@
             <td class="start">{% if (!o.options.autoUpload) { %}
                 <button class="btn btn-primary">
                     <i class="icon-upload icon-white"></i>
-                    <!--span>{%=locale.fileupload.start%}</span-->
+                    <span>Вивантажити</span>
                 </button>
             {% } %}</td>
         {% } else { %}
@@ -23,7 +23,7 @@
         <td class="cancel">{% if (!i) { %}
             <button class="btn btn-warning">
                 <i class="icon-ban-circle icon-white"></i>
-                <!--span>{%=locale.fileupload.cancel%}</span-->
+                <span>Відмінити</span>
             </button>
         {% } %}</td>
     </tr>

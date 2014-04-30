@@ -10,8 +10,25 @@
 }
 </style>
 <h3 style="font-family: Oreos;">  CSV data uploader (<span style='color:red;'>edbo</span>)  </h3>
-<div class="span12">
-  <div class="span6">
+  <div class="well well-small row row-fluid" style="background-color: white;">
+    Завантаження CSV-файлу з даними ЄДЕБО.
+    <?php
+      $this->widget('bootstrap.widgets.TbFileUpload', array(
+              'url' => $this->createUrl('/edbodata/upload'),
+              'imageProcessing' => true,
+              'name' => 'csv_file',
+              'multiple' => false,
+              'model' => $model,
+              'attribute' => 'csv_file', // see the attribute?
+              'multiple' => true,
+              'options' => array(
+                'maxFileSize' => 200000000,
+                'acceptFileTypes' => 'js:/(\.|\/)(csv)$/i',
+          )));
+    ?>
+  </div>
+<div class="well well-small row row-fluid" style="background-color: white;">
+  <center>
     <?php
     $this->widget('bootstrap.widgets.TbButton', array(
         'buttonType' => 'link',
@@ -27,7 +44,7 @@
     ?>
     <TABLE 
       class='detail-view table table-bordered table-condensed table-striped'
-      style="display: none; font-size: 8pt;" 
+      style="display: none; font-size: 8pt;width: 60%;" 
       border=4
       cellspacing="0"
       id="edbo_info_table">
@@ -58,30 +75,13 @@
           $class = 'even';
         }
         echo '<TR class=\''.$class.'\'>'
-                . '<TD >' . ( ++$i) . '</TD>';
-        echo '<TD ><I>' . $field . '</I></TD>'
-        . '<TD >' . $db_name . '</TD>'
-        . '<TD >' . $type . '</TD>';
+                . '<TD style=\'padding:0;\'>' . ( ++$i) . '</TD>';
+        echo '<TD style=\'padding:0;\'><I>' . $field . '</I></TD>'
+        . '<TD style=\'padding:0;\'>' . $db_name . '</TD>'
+        . '<TD style=\'padding:0;\'>' . $type . '</TD>';
         echo '</TR>';
       }
       ?>
     </TABLE>
-  </div>
-  <div class="span5">
-    Завантаження CSV-файлу з даними ЄДЕБО.
-    <?php
-      $this->widget('bootstrap.widgets.TbFileUpload', array(
-              'url' => $this->createUrl('/edbodata/upload'),
-              'imageProcessing' => true,
-              'name' => 'csv_file',
-              'multiple' => false,
-              'model' => $model,
-              'attribute' => 'csv_file', // see the attribute?
-              'multiple' => true,
-              'options' => array(
-                'maxFileSize' => 200000000,
-                'acceptFileTypes' => 'js:/(\.|\/)(csv)$/i',
-          )));
-    ?>
-  </div>
+  </center>
 </div>

@@ -426,7 +426,7 @@ class PersonspecialityController extends Controller {
   }
   
   /**
-   * Формування рейтингу на основі даних з ЄДЕБО.
+   * Формування рейтингу та звірення даних з ЄДЕБО.
    */
   public function actionRating(){
     $reqPersonspeciality = Yii::app()->request->getParam('Personspeciality',null);
@@ -495,12 +495,13 @@ class PersonspecialityController extends Controller {
     ));
   }
   
+  /**
+   * Формування XLS-файлу з рейтингом конкретної спеціальності
+   */
   public function actionExcelrating(){
     $reqPersonspeciality = Yii::app()->request->getParam('Personspeciality',null);
     $reqFaculty = Yii::app()->request->getParam('Facultets',null);
     $reqBenefits = Yii::app()->request->getParam('Benefit',null);
-    
-    //var_dump($_GET);exit();
 
     $faculty = new Facultets('search');
     $faculty->unsetAttributes();  // clear any default values
@@ -544,13 +545,14 @@ class PersonspecialityController extends Controller {
     if (isset($reqPersonspeciality['page_size'])){
       $model->page_size = $reqPersonspeciality['page_size'];
     }
+    //повертається масив моделей
     $models = $model->search_rel(true);
     if (count($models)){
         $_data = $this->CreateRatingData($models);
         $this->layout = '//layouts/clear';
         $this->render('/personspeciality/excelrating',$_data);
     } else {
-        echo 'WOW!';
+        echo 'Помилка - немає даних!';
     }
   }
   

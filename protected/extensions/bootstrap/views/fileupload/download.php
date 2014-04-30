@@ -13,7 +13,7 @@
             {% } %}</td>
             <td class="name">
                 <!--a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a-->
-               <span style="font-family: Tahoma; font-size: 8pt;"><i class="icon-ok"></i>{%=file.uploaded%}</span>
+               <span style="font-family: Tahoma; font-size: 8pt;">Результат: {%=file.uploaded%}</span>
             </td>
             <!--td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2"></td-->
@@ -21,7 +21,7 @@
         <td class="delete">
             <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
                 <i class="icon-trash icon-white"></i>
-                <span></span>
+                <span>Тепер можна видалити</span>
             </button>
             <input type="checkbox" name="delete" value="1">
         </td>

@@ -28,6 +28,85 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->clientScript->getCoreScrip
   * html .ui-autocomplete {
     height: 200px;
   }
+  
+/* Request status styling */
+  .req-status-0 {
+    color: red;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-1 {
+    color: black;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-2 {
+    color: #EE5f5B;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-3 {
+    color: #800000;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-4 {
+    color: black;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-5 {
+    color: #298dcd;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-6 {
+    color: #c09853;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-7 {
+    color: green;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-8 {
+    color: black;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-9 {
+    color: #EE5f5B;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
+  .req-status-10 {
+    color: red;
+    background-color: #DDDDEE;
+    font-size: 8pt;
+    font-family: Tahoma;
+    font-weight: normal;
+  }
 </style>
 <script type="text/javascript">
 $(function (){
@@ -81,6 +160,19 @@ $(function (){
     if ($('#Personspeciality_rating_order_mode').is(':checked')){
       $('#Personspeciality_page_size').val('автоматично');
       $('#Personspeciality_page_size').attr('readonly',true);
+      
+      $('#Personspeciality_searchID').attr('readonly',true);
+      $('#Facultets_FacultetFullName').attr('readonly',true);
+      $('#Personspeciality_NAME').attr('readonly',true);
+      $('#Benefit_BenefitName').attr('readonly',true);
+      
+      $('#Personspeciality_mistakes_only').slideUp();
+      $('#Personspeciality_mistakes_only').attr('checked',false);
+      $('#for_mistakes_only').slideUp();
+      $('#Personspeciality_edbo_mode').slideUp();
+      $('#Personspeciality_edbo_mode').attr('checked',false);
+      $('#for_edbo_mode').slideUp();
+      
       $('#statuses').slideDown();
       if (!$('#hidden_spec_id').val()){
         $('#RatingExcel').slideUp();
@@ -92,6 +184,17 @@ $(function (){
     } else {
       $('#Personspeciality_page_size').val('15');
       $('#Personspeciality_page_size').attr('readonly',false);
+      
+      $('#Personspeciality_searchID').attr('readonly',false);
+      $('#Facultets_FacultetFullName').attr('readonly',false);
+      $('#Personspeciality_NAME').attr('readonly',false);
+      $('#Benefit_BenefitName').attr('readonly',false);
+      
+      $('#Personspeciality_mistakes_only').slideDown();
+      $('#for_mistakes_only').slideDown();
+      $('#for_edbo_mode').slideDown();
+      $('#Personspeciality_edbo_mode').slideDown();
+      
       $('#statuses').slideUp();
       $('#RatingButton').slideDown();
       $('#RatingExcel').slideUp();
@@ -167,7 +270,8 @@ $(function (){
     'style' => 'float:left;margin-right: 10px;'
 )); ?>
 <?php echo $form->label($model, 'mistakes_only', array(
-    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;',
+    'id' => 'for_mistakes_only',
 )); ?>
 
   
@@ -175,7 +279,8 @@ $(function (){
     'style' => 'float:left;margin-right: 10px;'
 )); ?>
 <?php echo $form->label($model, 'edbo_mode', array(
-    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;'
+    'style' => 'font-size: 8pt; font-family: Tahoma; text-align: left;',
+    'id' => 'for_edbo_mode',
 )); ?>
   <div class="span12">
     <div class="span6">
@@ -199,7 +304,7 @@ $(function (){
       ?>
 <?php
 echo $form->textField($model, 'SPEC', array(
-    'style' => 'font-size: 8pt; font-family: Tahoma; height: 12px;',
+    'style' => 'font-size: 7pt; font-family: Tahoma; height: 12px;',
 ));
 echo $form->hiddenField($model, 'SepcialityID', array(
     'id' => 'hidden_spec_id',
@@ -448,8 +553,10 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         $span_class = 'label-important';
       }
       echo '<span class=\'label '.$span_class.'\'>'.$doc_orig.
-              '</span><hr style=\'margin: 5px !important;\'/>';
-      
+              '</span><br/>';
+      echo 'статус заявки: <span class=\'label badge req-status-'.$data->StatusID.'\'>'
+            . $data->status->PersonRequestStatusTypeName
+            . '</span><hr style=\'margin: 5px !important;\'/>';
 ?> <div id='row_<?php echo $row; ?>' style='display:none; font-size:8pt;'> <?php
               echo 'id_заявки: <span class=\'label label-info\'>'.$data->idPersonSpeciality.
                       '</span><hr style=\'margin: 5px !important;\'/>';
@@ -457,8 +564,6 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                       '</span><hr style=\'margin: 5px !important;\'/>';
               echo 'id_ЄДЕБО: <span class=\'label label-info\'>'.$data->edboID.
                       '</span><hr style=\'margin: 5px !important;\'/>';
-              echo 'статус заявки: <span class=\'label label-inverse\'>'.$data->status->PersonRequestStatusTypeName.
-                      '</span><br/>';
 ?> </div> <?php
             }
         ),
@@ -485,7 +590,44 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             ),
             'headerHtmlOptions' => array(
                 'style' => 'width: 150px;'
-            )
+            ),
+            'value' => function ($data){
+              /* @var $data Personspeciality */
+              if (!$data->edbo && $data->edboID){
+                $data->edbo = EdboData::model()->findByPk($data->edboID);
+              }
+              if ($data->edbo){
+                $spec_code_ok = (strstr($data->SPEC,$data->edbo->SpecCode) !== FALSE);
+                $speciality_ok = ($data->edbo->Speciality)? 
+                        (strstr($data->SPEC,$data->edbo->Speciality) !== FALSE): true;
+                $specialization_ok = ($data->edbo->Specialization)? 
+                        (strstr($data->SPEC,$data->edbo->Specialization) !== FALSE): true;
+                $edu_form_ok = (strstr($data->SPEC,$data->edbo->EduForm) !== FALSE);
+                if ($spec_code_ok && $speciality_ok && $specialization_ok && $edu_form_ok){
+                  echo "<span title='співпадає' style='color: green;'>"
+                  . $data->SPEC
+                  . "</span>";
+                } else if (!$spec_code_ok){
+                  echo "<span title='В ЄДЕБО код напряму: ".$data->edbo->SpecCode."' style='color: red;'>"
+                  . $data->SPEC
+                  . "</span>";
+                } else if (!$speciality_ok){
+                  echo "<span title='В ЄДЕБО спеціальність: ".$data->edbo->Speciality."' style='color: red;'>"
+                  . $data->SPEC
+                  . "</span>";
+                } else if (!$specialization_ok){
+                  echo "<span title='В ЄДЕБО спеціалізація: ".$data->edbo->Specialization."' style='color: red;'>"
+                  . $data->SPEC
+                  . "</span>";
+                } else if (!$edu_form_ok){
+                  echo "<span title='В ЄДЕБО форма навчання: ".$data->edbo->EduForm."' style='color: red;'>"
+                  . $data->SPEC
+                  . "</span>";
+                }
+              } else {
+                echo $data->SPEC;
+              }
+            }
         ),
         
         array(

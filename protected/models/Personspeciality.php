@@ -669,6 +669,11 @@ class Personspeciality extends ActiveRecord {
     }
     //вибираємо лише ті документи, у яких є бали (відмітки)
     $criteria->addCondition('docs.AtestatValue IS NOT NULL');
+    //якщо поступає на спеціаліста або магістра, то враховувати бали лише диплому,
+    //інакше - атестату
+    $criteria->addCondition('IF (t.QualificationID IN (2,3), '
+            . '(docs.TypeID IN (11,12,13)), '
+            . '(docs.TypeID = 2) )');
     
     if ($this->edbo_mode){
       //якщо потрібно вибрати тільки ті дані, що відповідають даним з таблиці edbo_data

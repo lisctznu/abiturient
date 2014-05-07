@@ -433,40 +433,39 @@ class PersonspecialityController extends Controller {
     $reqFaculty = Yii::app()->request->getParam('Facultets',null);
     $reqBenefits = Yii::app()->request->getParam('Benefit',null);
     
-    //var_dump($_GET);exit();
-
-    $faculty = new Facultets('search');
-    $faculty->unsetAttributes();  // clear any default values
-    if ($reqFaculty){
-      $faculty->attributes = $reqFaculty;
-    }
-    $benefit = new Benefit('search');
-    $benefit->unsetAttributes();  // clear any default values
-    if ($reqBenefits){
-      $benefit->attributes = $reqBenefits;
-    }
-    
     $model = new Personspeciality();
-    $model->searchFaculty = $faculty;
-    $model->searchBenefit = $benefit;
+    $model->rating_order_mode = 0;
     
-    if (isset($reqPersonspeciality['searchID'])){
-      $model->searchID = $reqPersonspeciality['searchID'];
-    }
-    if (isset($reqPersonspeciality['NAME'])){
-      $model->NAME = $reqPersonspeciality['NAME'];
-    }
-    if (isset($reqPersonspeciality['SPEC'])){
-      $model->SPEC = $reqPersonspeciality['SPEC'];
-    }
-    if (isset($reqPersonspeciality['idPersonSpeciality'])){
-      $model->idPersonSpeciality = $reqPersonspeciality['idPersonSpeciality'];
-    }
     if (isset($reqPersonspeciality['rating_order_mode'])){
       $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
       if ($model->rating_order_mode){
         $model->SepcialityID = $reqPersonspeciality['SepcialityID'];
       }
+    }
+    
+    $faculty = new Facultets('search');
+    $benefit = new Benefit('search');
+    if (!$model->rating_order_mode){
+      $faculty->unsetAttributes();  // clear any default values
+      if ($reqFaculty){
+        $faculty->attributes = $reqFaculty;
+      }
+      $benefit->unsetAttributes();  // clear any default values
+      if ($reqBenefits){
+        $benefit->attributes = $reqBenefits;
+      }
+    }
+    $model->searchFaculty = $faculty;
+    $model->searchBenefit = $benefit;
+    
+    if (isset($reqPersonspeciality['searchID']) && !$model->rating_order_mode){
+      $model->searchID = $reqPersonspeciality['searchID'];
+    }
+    if (isset($reqPersonspeciality['NAME']) && !$model->rating_order_mode){
+      $model->NAME = $reqPersonspeciality['NAME'];
+    }
+    if (isset($reqPersonspeciality['SPEC']) && !$model->rating_order_mode){
+      $model->SPEC = $reqPersonspeciality['SPEC'];
     }
     if (isset($reqPersonspeciality['status_confirmed'])){
       $model->status_confirmed = $reqPersonspeciality['status_confirmed'];
@@ -477,13 +476,13 @@ class PersonspecialityController extends Controller {
     if (isset($reqPersonspeciality['status_submitted'])){
       $model->status_submitted = $reqPersonspeciality['status_submitted'];
     }
-    if (isset($reqPersonspeciality['mistakes_only'])){
+    if (isset($reqPersonspeciality['mistakes_only']) && !$model->rating_order_mode){
       $model->mistakes_only = $reqPersonspeciality['mistakes_only'];
     }
-    if (isset($reqPersonspeciality['edbo_mode'])){
+    if (isset($reqPersonspeciality['edbo_mode']) && !$model->rating_order_mode){
       $model->edbo_mode = $reqPersonspeciality['edbo_mode'];
     }
-    if (isset($reqPersonspeciality['page_size'])){
+    if (isset($reqPersonspeciality['page_size']) && !$model->rating_order_mode){
       $model->page_size = $reqPersonspeciality['page_size'];
     }
     
@@ -503,30 +502,30 @@ class PersonspecialityController extends Controller {
     $reqFaculty = Yii::app()->request->getParam('Facultets',null);
     $reqBenefits = Yii::app()->request->getParam('Benefit',null);
 
-    $faculty = new Facultets('search');
-    $faculty->unsetAttributes();  // clear any default values
-    if ($reqFaculty){
-      $faculty->attributes = $reqFaculty;
-    }
-    $benefit = new Benefit('search');
-    $benefit->unsetAttributes();  // clear any default values
-    if ($reqBenefits){
-      $benefit->attributes = $reqBenefits;
-    }
-    
     $model = new Personspeciality();
-    $model->searchFaculty = $faculty;
-    $model->searchBenefit = $benefit;
-    
-    if (isset($reqPersonspeciality['SPEC'])){
-      $model->SPEC = $reqPersonspeciality['SPEC'];
-    }
     if (isset($reqPersonspeciality['rating_order_mode'])){
       $model->rating_order_mode = $reqPersonspeciality['rating_order_mode'];
       if ($model->rating_order_mode){
         $model->SepcialityID = $reqPersonspeciality['SepcialityID'];
       }
     }
+    $faculty = new Facultets('search');
+    $benefit = new Benefit('search');
+    if (!$model->rating_order_mode){
+      $faculty->unsetAttributes();  // clear any default values
+      if ($reqFaculty){
+        $faculty->attributes = $reqFaculty;
+      }
+      $benefit->unsetAttributes();  // clear any default values
+      if ($reqBenefits){
+        $benefit->attributes = $reqBenefits;
+      }
+      if (isset($reqPersonspeciality['SPEC'])){
+        $model->SPEC = $reqPersonspeciality['SPEC'];
+      }
+    }
+    $model->searchFaculty = $faculty;
+    $model->searchBenefit = $benefit;
     if (isset($reqPersonspeciality['status_confirmed'])){
       $model->status_confirmed = $reqPersonspeciality['status_confirmed'];
     }
@@ -535,15 +534,6 @@ class PersonspecialityController extends Controller {
     }
     if (isset($reqPersonspeciality['status_submitted'])){
       $model->status_submitted = $reqPersonspeciality['status_submitted'];
-    }
-    if (isset($reqPersonspeciality['mistakes_only'])){
-      $model->mistakes_only = $reqPersonspeciality['mistakes_only'];
-    }
-    if (isset($reqPersonspeciality['edbo_mode'])){
-      $model->edbo_mode = $reqPersonspeciality['edbo_mode'];
-    }
-    if (isset($reqPersonspeciality['page_size'])){
-      $model->page_size = $reqPersonspeciality['page_size'];
     }
     //повертається масив моделей
     $models = $model->search_rel(true);
@@ -576,7 +566,7 @@ class PersonspecialityController extends Controller {
                 $_pzk_counter, 
                 $_quota_counter);
 
-        $u_max = array();
+        $u_max_info_row = array();
         $info_row = array();
 
         $i = 0;
@@ -587,6 +577,8 @@ class PersonspecialityController extends Controller {
         $data['quota'] = array();
         $data['budget'] = array();
         $data['contract'] = array();
+        $data['below'] = array();
+        $below_counter = 0;
         
         foreach ($models as $model){
           $info_row['PIB'] = iconv("utf-8", "windows-1251",$model->NAME);
@@ -594,7 +586,7 @@ class PersonspecialityController extends Controller {
           $info_row['isPZK'] = ($model->isOutOfComp || $model->Quota1)? '+': '';
           $info_row['isExtra'] = ($model->isExtraEntry)? '+': '';
           $info_row['isOriginal'] = (!$model->isCopyEntrantDoc)? '+': '';
-
+          $was = 0;
           if ((Personspeciality::$is_rating_order) && $model->Quota1){
             //цільовики
             $was = Personspeciality::decrementCounter(Personspeciality::$C_QUOTA);    
@@ -606,9 +598,9 @@ class PersonspecialityController extends Controller {
             } else {
               $info_row['isPZK'] = 'Z';
               if ($u == 0){
-                $u_max = $info_row;
-              } else if ( (float)$u_max['Points'] < (float)$info_row['Points'] ){
-                $u_max = $info_row;
+                $u_max_info_row = $info_row;
+              } else if ( (float)$u_max_info_row['Points'] < (float)$info_row['Points'] ){
+                $u_max_info_row = $info_row;
               }
               $data['u'][$u++] = $info_row;
               $i++;
@@ -627,9 +619,9 @@ class PersonspecialityController extends Controller {
             } else {
               $info_row['isPZK'] = 'Z';
               if ($u == 0){
-                $u_max = $info_row;
-              } else if ( (float)$u_max['Points'] < (float)$info_row['Points'] ){
-                $u_max = $info_row;
+                $u_max_info_row = $info_row;
+              } else if ( (float)$u_max_info_row['Points'] < (float)$info_row['Points'] ){
+                $u_max_info_row = $info_row;
               }
               $data['u'][$u++] = $info_row;
               $i++;
@@ -641,17 +633,17 @@ class PersonspecialityController extends Controller {
                   ( $model->isBudget && !$model->isOutOfComp && !$model->Quota1 ) || 
                   (!empty($data['u']) && !$model->isOutOfComp && !$model->Quota1 )) ){
             //на бюджет
-            while (!empty($data['u']) && ( (float)$u_max['Points'] > (float)$info_row['Points'])){
+            while (!empty($data['u']) && ( (float)$u_max_info_row['Points'] > (float)$info_row['Points'])){
               $was = Personspeciality::decrementCounter(Personspeciality::$C_BUDGET);
               if ($was){
                 $local_counter = 1 + $_budget_counter - $was - $qpzk;
-                $data['budget'][$local_counter] = $u_max;
+                $data['budget'][$local_counter] = $u_max_info_row;
               }
               else {
                 $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
                 if ($was){
                   $local_counter = 1 + $_contract_counter - $was;
-                  $data['contract'][$local_counter] = $u_max;
+                  $data['contract'][$local_counter] = $u_max_info_row;
                 }
                 else {
                   break;
@@ -659,13 +651,13 @@ class PersonspecialityController extends Controller {
               }
               $p_max = 0.0;
               foreach ($data['u'] as $u_id => $d_u){
-                if ($d_u['PIB'] == $u_max['PIB'] && $d_u['Points'] == $u_max['Points']){
+                if ($d_u['PIB'] == $u_max_info_row['PIB'] && $d_u['Points'] == $u_max_info_row['Points']){
                   unset($data['u'][$u_id]);
                   continue;
                 }
                 if ((float)$d_u['Points'] > $p_max){
                   $p_max = (float)$d_u['Points'];
-                  $u_max = $d_u;
+                  $u_max_info_row = $d_u;
                 }
               }
             }
@@ -682,24 +674,24 @@ class PersonspecialityController extends Controller {
                   ((!$model->isBudget && !$model->isOutOfComp && !$model->Quota1) || 
                   (!$was && $model->isBudget && !$model->isOutOfComp && !$model->Quota1) )){
             //на контракт
-            while (!empty($data['u']) && ( (float)$u_max['Points'] > (float)$info_row['Points'])){
+            while (!empty($data['u']) && ( (float)$u_max_info_row['Points'] > (float)$info_row['Points'])){
               $was = Personspeciality::decrementCounter(Personspeciality::$C_CONTRACT);
               if ($was){
                 $local_counter = 1 + $_contract_counter - $was;
-                $data['contract'][$local_counter] = $u_max;
+                $data['contract'][$local_counter] = $u_max_info_row;
               }
               if (!$was){
                 break;
               }
               $p_max = 0.0;
               foreach ($data['u'] as $u_id => $d_u){
-                if ($d_u['PIB'] == $u_max['PIB'] && $d_u['Points'] == $u_max['Points']){
+                if ($d_u['PIB'] == $u_max_info_row['PIB'] && $d_u['Points'] == $u_max_info_row['Points']){
                   unset($data['u'][$u_id]);
                   continue;
                 }
                 if ((float)$d_u['Points'] > $p_max){
                   $p_max = (float)$d_u['Points'];
-                  $u_max = $d_u;
+                  $u_max_info_row = $d_u;
                 }
               }
             }
@@ -707,7 +699,27 @@ class PersonspecialityController extends Controller {
             if ($was){
               $local_counter = 1 + $_contract_counter - $was;
               $data['contract'][$local_counter] = $info_row;
+              $i++;
+              continue;
             }
+          }
+          
+          if (!$was){
+            while (!empty($data['u']) && ( (float)$u_max_info_row['Points'] > (float)$info_row['Points'])){
+              $data['below'][$below_counter++] = $u_max_info_row;
+              $p_max = 0.0;
+              foreach ($data['u'] as $u_id => $d_u){
+                if ($d_u['PIB'] == $u_max_info_row['PIB'] && $d_u['Points'] == $u_max_info_row['Points']){
+                  unset($data['u'][$u_id]);
+                  continue;
+                }
+                if ((float)$d_u['Points'] > $p_max){
+                  $p_max = (float)$d_u['Points'];
+                  $u_max_info_row = $d_u;
+                }
+              }
+            }
+            $data['below'][$below_counter++] = $info_row;
           }
           $i++;
         }

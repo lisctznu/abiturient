@@ -25,7 +25,7 @@ header('Content-Type: application/x-unknown');
 
     		<style>
 			TD {
-				font-size: 9pt;
+				font-size: 8pt;
 				padding: 3px;
 				font-family: 'Tahoma';
 				vertical-align: middle;
@@ -38,7 +38,8 @@ header('Content-Type: application/x-unknown');
 	<?php 
 	?>
 
-		<TABLE cellspacing="0" border="0" style="border-collapse:collapse;">
+		<TABLE cellspacing="0" border="0" width="18cm"
+           style="border-collapse:collapse;" >
 			<TR>
 				<TD colspan='7' style="border:solid 0px black;">
 					<?php echo iconv("utf-8", "windows-1251",'Факультет:'); ?> 
@@ -91,7 +92,7 @@ header('Content-Type: application/x-unknown');
 				<TD>
 					<?php echo iconv("utf-8", "windows-1251",'Оригінал'); ?>
 				</TD>
-				<TD>
+				<TD style='font-size: 6pt;'>
 					<?php echo iconv("utf-8", "windows-1251",'Зарах за хвилею'); ?>
 				</TD>
 			</TR>
@@ -232,6 +233,48 @@ header('Content-Type: application/x-unknown');
 				</TD>
 				<TD>
 					<?php echo $data['contract'][$i]['isOriginal'];?>
+				</TD>
+				<TD>
+					
+				</TD>
+			</TR>
+			<?php } ?>
+      
+			<!-- НЕ ПРОХОДЯТЬ ЗА КОНКУРСОМ -->
+			<?php for ($i = 1; $i < count($data['below'])+1; $i++){ 
+        if (!isset($data['below'][$i])){
+          continue;
+        }
+        if ($i == 1){
+          ?>
+			<TR>
+				<TD colspan='7' style="border:solid 0px black;">
+      <center>
+        =====================================================================
+      </center>
+				</TD>
+			</TR>
+          <?php
+        }
+        ?>
+      <TR>
+				<TD>
+					<?php echo ($i);?>
+				</TD>
+				<TD>
+					<?php echo $data['below'][$i]['PIB'];?>
+				</TD>
+				<TD>
+					<?php echo $data['below'][$i]['Points'];?>
+				</TD>
+				<TD>
+					<?php echo $data['below'][$i]['isPZK'];?>
+				</TD>
+				<TD>
+					<?php echo $data['below'][$i]['isExtra'];?>
+				</TD>
+				<TD>
+					<?php echo $data['below'][$i]['isOriginal'];?>
 				</TD>
 				<TD>
 					

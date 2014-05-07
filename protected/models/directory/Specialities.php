@@ -26,12 +26,16 @@
  */
 class Specialities extends CActiveRecord
 {
+  public $tSPEC;
+  public $cnt_requests_per_day;
+  public $cnt_requests;
+  public $cnt_persons_per_day;
+  public $cnt_persons;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
 	 * @return Specialities the static model class
 	 */
-  public $tSPEC;
         public static function DropDownMask($FacultetID = 0, $EducationFormID = 0){
             $user = Yii::app()->user->getUserModel();
             $records = array();
@@ -167,7 +171,7 @@ class Specialities extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'personsepcialities' => array(self::HAS_MANY, 'Personsepciality', 'SepcialityID'),
+			'personsepcialities' => array(self::HAS_MANY, 'Personspeciality', 'SepcialityID'),
 			'facultet' => array(self::BELONGS_TO, 'Facultets', 'FacultetID'),
 			'eduform' => array(self::BELONGS_TO, 'Personeducationforms', 'PersonEducationFormID'),
                        

@@ -6,8 +6,77 @@
 <!--http://10.1.11.57:8080/request_report-1.0/bachelor.jsp?PersonID=1&PersonSpecialityID=1&iframe=true&width=1024&height=600-->
 
 
-  <br/>
+<!-- Щоденна статистика заяв абітурієнтів за напрямками -->
+<h3>Щоденна статистика заяв абітурієнтів за напрямками</h3>
+
+<div class="form">
+  <?php
+  $model = Yii::app()->user->getUserModel();
+  if (empty($model->syspk) || empty($model->syspk->printIP)) {
+    throw new Exception("Необхідно визначити адресу серверу друку документів!");
+  }
+  $ip = $model->syspk->printIP;
+  $act = Yii::app()->createUrl("statistic/view");
+  $form = $this->beginWidget('CActiveForm', array(
+      'id' => 'zno-form-modal',
+      'enableAjaxValidation' => false,
+      'method' => "GET",
+      'action' => $act,
+  ));
+  ?>
+  <div class="row-fluid">
+    <div class="span3">
+      <?php echo Chtml::label("Освітньо-кваліфікаційний рівень", 'QualificationID'); ?>
+      <?php
+      echo CHtml::dropDownList(
+              'QualificationID', 
+              "", 
+              array("1" => "Бакалавр", "3" => "Спеціаліст", "2" => "Магістр"), 
+              array('empty' => '',));
+      ?>
+    </div>
+    <div class='span3'>
+      <?php echo CHtml::label("Дата", 'Date'); ?>
+      <?php
+      echo CHtml::textField(
+              'Date', 
+              date('d.m.Y'), 
+              array('class' => 'datepicker'));
+      ?>
+
+    </div>
+    <div class="span4">
+      <?php echo Chtml::label("Секретар", 'secname'); ?>
+      <?php
+      echo CHtml::dropDownList(
+              'secname', 
+              "С.В. Іваненко", 
+              array(
+                  "С.В. Іваненко" => "С.В. Іваненко", 
+                  "О.М. Олійник" => "О.М. Олійник"), 
+              array('empty' => '',));
+      ?>
+
+    </div>
+
+  </div>
  
+  <div class="row-fluid">
+    <?php
+    $this->widget("bootstrap.widgets.TbButton", array(
+        'buttonType' => 'submit',
+        'type' => 'primary',
+        "size" => "large",
+        'label' => 'Показати',
+    ));
+    ?>
+  </div>
+<?php $this->endWidget(); ?>
+</div>
+ <hr/>
+<!-- ----------------------------------------------------------------------- -->
+<br/>
+
 <div clas="form">
     <h3>Заявки абітурієнтів із сільської місцевості</h3>
     <a class="btn btn-primary btn-large" href='<?php echo Yii::app()->createUrl('statistic/fromvillage'); ?>'>Показати</a>
@@ -135,56 +204,6 @@
 
 
 <br/>
-
-
-<h3>Щоденна статистика заяв абітуріентів за напрямками</h3>
-
-<div class="form">
-<?php 
-  $model = Yii::app()->user->getUserModel();
-  if (empty($model->syspk) || empty($model->syspk->printIP) ) throw new Exception ("Необхідно визначити адресу серверу друку документів!");
-  $ip = $model->syspk->printIP;  
-  $act = Yii::app()->createUrl("statistic/view");
-  $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'zno-form-modal',
-	'enableAjaxValidation'=>false,
-        'method'=>"GET",
-        'action'=>$act,
-)); ?>
-<div class="row-fluid">
-    <div class="span6">
-		<?php echo Chtml::label("Освітньо кваліфікаційний рівень",'okr'); ?>
-		<?php echo CHtml::dropDownList('okr', "", array("6"=>"Бакалавр","7"=>"Специалист","8"=>"Магистр"),array('empty'=>'', 'class'=>"span12")); ?>
-		
-    </div>
-    <div class ="span2">
-                    <?php echo CHtml::label("Дата",'date'); ?>
-                    <?php echo CHtml::textField('date', "", array('class'=>'span12 datepicker')); ?>
-                    
-    </div>
-    <div class="span4">
-		<?php echo Chtml::label("Секретар",'secname'); ?>
-		<?php echo CHtml::dropDownList('secname', "С.В. Іваненко", array("С.В. Іваненко"=>"С.В. Іваненко", "О.М. Олійник"=>"О.М. Олійник"),array('empty'=>'', 'class'=>"span12")); ?>
-		
-    </div>
-    
-</div>
-    <hr>
-    <div class="row-fluid">
-     <?php $this->widget("bootstrap.widgets.TbButton", array(
-			'buttonType'=>'submit',
-			'type'=>'primary',
-                         "size"=>"large",
-			'label'=>'Показати',
-                        )); 
-               
-     ?>
-    </div>
-<?php $this->endWidget(); ?>
-</div>
-
- <br/>
-
 
 <h3>Звіт для загальної перевірки</h3>
  <label for ="forprint" > 

@@ -767,6 +767,23 @@ class Personspeciality extends ActiveRecord {
     ));
   }
 
+  /**
+   * Максимально повний пошук із врахування зовнішніх реляційних відношень.
+   * Можливі гальма.
+   * @param bool $return_array_of_models default false
+   * @return \CActiveDataProvider
+   * @todo Please do it! JUST DO IT!!!!!!
+   */
+  public function search_all_rel($return_array_of_models = false){
+    
+  }
+  
+  
+  /**
+   * Я не знаю, для чого це. Валєра знає.
+   * @param type $lol WTF
+   * @author Veleriy Efimov <valera_e@ukr.net>
+   */
   public function loadOnlineStatementFromJSON($lol) {
     //$json_string = preg_replace("/[+-]?\d+\.\d+/", '"\0"', $json_string ); 
 
